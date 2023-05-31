@@ -1,8 +1,26 @@
-import { type NextPage } from 'next'
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { type GetServerSidePropsContext, type NextPage } from 'next'
+import { getSession, signIn } from 'next-auth/react'
 import Head from 'next/head'
-import { api } from '@/utils/api'
-import { Button } from '@mantine/core'
+import { Button, Center, Container, Stack } from '@mantine/core'
+import { IconBrandTwitter, IconCurrencyEthereum } from '@tabler/icons-react'
+import Image from 'next/image'
+import LogoImage from '@/assets/images/airdawg-logo.png'
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getSession(context)
+  // redirect user to dashboard if user has signed in
+  if (session) {
+    return {
+      redirect: {
+        destination: '/dashboard/project',
+        permanent: false,
+      },
+    }
+  }
+  return {
+    props: {},
+  }
+}
 
 const Home: NextPage = () => {
   return (
@@ -18,33 +36,40 @@ const Home: NextPage = () => {
           href="/favicon.ico"
         />
       </Head>
-      <main>
-        <p>
-          <Button>Click me!</Button>
-        </p>
-        <AuthShowcase />
-      </main>
+      <Container
+        size="xs"
+        mt={140}
+      >
+        <Center>
+          <Image
+            src={LogoImage}
+            width={270}
+            height={152}
+            alt="Logo of Airdawg Creator"
+          />
+        </Center>
+        <Stack mt={16}>
+          <Button
+            leftIcon={<IconBrandTwitter />}
+            onClick={() =>
+              void signIn('twitter', {
+                callbackUrl: `${window.location.origin}/dashboard/project`,
+              })
+            }
+          >
+            Sign in with Twitter
+          </Button>
+          <Button
+            leftIcon={<IconCurrencyEthereum />}
+            variant="outline"
+            disabled
+          >
+            Sign in with Ethereum(WIP)
+          </Button>
+        </Stack>
+      </Container>
     </>
   )
 }
 
 export default Home
-
-const AuthShowcase: React.FC = () => {
-  const { data: sessionData } = useSession()
-
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  )
-
-  return (
-    <div>
-      <p>
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button onClick={sessionData ? () => void signOut() : () => void signIn()}>{sessionData ? 'Sign out' : 'Sign in'}</button>
-    </div>
-  )
-}

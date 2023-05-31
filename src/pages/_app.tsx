@@ -4,6 +4,7 @@ import { type AppType } from 'next/app'
 import { api } from '@/utils/api'
 import '@/styles/globals.css'
 import { MantineProvider } from '@mantine/core'
+import { rtlCache } from '@/utils/rtl-cache'
 
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
@@ -11,6 +12,7 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
       <MantineProvider
         withGlobalStyles
         withNormalizeCSS
+        emotionCache={rtlCache}
       >
         <Component {...pageProps} />
       </MantineProvider>
