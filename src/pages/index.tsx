@@ -2,7 +2,7 @@ import { type GetServerSidePropsContext, type NextPage } from 'next'
 import { getSession, signIn } from 'next-auth/react'
 import Head from 'next/head'
 import { Button, Center, Container, Stack } from '@mantine/core'
-import { IconBrandTwitter, IconCurrencyEthereum } from '@tabler/icons-react'
+import { IconBrandTwitter, IconCurrencyEthereum, IconBrandDiscord } from '@tabler/icons-react'
 import Image from 'next/image'
 import LogoImage from '@/assets/images/airdawg-logo.png'
 
@@ -23,6 +23,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const Home: NextPage = () => {
+  const callbackUrl = '/dashboard/project'
+
   return (
     <>
       <Head>
@@ -51,13 +53,16 @@ const Home: NextPage = () => {
         <Stack mt={16}>
           <Button
             leftIcon={<IconBrandTwitter />}
-            onClick={() =>
-              void signIn('twitter', {
-                callbackUrl: `${window.location.origin}/dashboard/project`,
-              })
-            }
+            onClick={() => void signIn('twitter', { callbackUrl })}
           >
             Sign in with Twitter
+          </Button>
+          <Button
+            color={'grape'}
+            leftIcon={<IconBrandDiscord />}
+            onClick={() => void signIn('discord', { callbackUrl })}
+          >
+            Sign in with Discord
           </Button>
           <Button
             leftIcon={<IconCurrencyEthereum />}
