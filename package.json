@@ -8,8 +8,14 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "prettier": "prettier --write src"
+    "prettier": "prettier --write src",
+    "prepare": "husky install"
   },
+  "engines": {
+    "node": ">=16.18.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.0.0+",
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@mantine/core": "^6.0.13",
@@ -43,6 +49,8 @@
     "@typescript-eslint/parser": "^5.59.6",
     "eslint": "^8.40.0",
     "eslint-config-next": "^13.4.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2",
     "prisma": "^4.14.0",
     "stylis-plugin-rtl": "^2.1.1",
     "typescript": "^5.0.4"
