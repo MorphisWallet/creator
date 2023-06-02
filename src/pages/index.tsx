@@ -1,10 +1,13 @@
 import { type GetServerSidePropsContext, type NextPage } from 'next'
-import { getSession, signIn } from 'next-auth/react'
+import { getSession, signIn, useSession } from 'next-auth/react'
 import Head from 'next/head'
 import { Button, Center, Container, Stack } from '@mantine/core'
 import { IconBrandTwitter, IconCurrencyEthereum, IconBrandDiscord } from '@tabler/icons-react'
 import Image from 'next/image'
 import LogoImage from '@/assets/images/airdawg-logo.png'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { useDidUpdate } from '@mantine/hooks'
+import { useRouter } from 'next/router'
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getSession(context)
@@ -24,6 +27,16 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 const Home: NextPage = () => {
   const callbackUrl = '/dashboard/project'
+  const { openConnectModal } = useConnectModal()
+
+  /** handle sign in with ethereum with rainbowkit* */
+  const { status } = useSession()
+  const { push } = useRouter()
+  useDidUpdate(() => {
+    if (status === 'authenticated') {
+      void push(callbackUrl)
+    }
+  }, [status])
 
   return (
     <>
@@ -48,9 +61,10 @@ const Home: NextPage = () => {
             width={270}
             height={152}
             alt="Logo of Airdawg Creator"
+            priority
           />
         </Center>
-        <Stack mt={16}>
+        <Stack mt={32}>
           <Button
             leftIcon={<IconBrandTwitter />}
             onClick={() => void signIn('twitter', { callbackUrl })}
@@ -66,10 +80,10 @@ const Home: NextPage = () => {
           </Button>
           <Button
             leftIcon={<IconCurrencyEthereum />}
-            variant="outline"
-            disabled
+            onClick={openConnectModal}
+            color={'indigo'}
           >
-            Sign in with Ethereum(WIP)
+            Sign in with Ethereum
           </Button>
         </Stack>
       </Container>

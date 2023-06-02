@@ -53,6 +53,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  address       String?   @unique
 
   @@map("creator_user")
 }
