@@ -4,14 +4,15 @@ import { type AppType } from 'next/app'
 import { api } from '@/utils/api'
 import '@/styles/globals.css'
 import { MantineProvider } from '@mantine/core'
-import { rtlCache } from '@/utils/rtl-cache'
+import { emotionCache } from '@/utils/emotion-cache'
 import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { bsc, mainnet, polygon } from 'wagmi/chains'
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from 'wagmi/providers/public'
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
-import { type GetSiweMessageOptions, RainbowKitSiweNextAuthProvider } from '@rainbow-me/rainbowkit-siwe-next-auth'
 import '@rainbow-me/rainbowkit/styles.css'
+import { Notifications } from '@mantine/notifications'
+import { type GetSiweMessageOptions, RainbowKitSiweNextAuthProvider } from '@/providers/RainbowKitSiweNextAuthProvider'
 
 const { chains, publicClient } = configureChains(
   [mainnet, polygon, bsc],
@@ -41,8 +42,9 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
         <MantineProvider
           withGlobalStyles
           withNormalizeCSS
-          emotionCache={rtlCache}
+          emotionCache={emotionCache}
         >
+          <Notifications position="top-right" />
           <RainbowKitSiweNextAuthProvider getSiweMessageOptions={getSiweMessageOptions}>
             <RainbowKitProvider
               chains={chains}

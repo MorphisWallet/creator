@@ -1,6 +1,6 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { type GetServerSidePropsContext } from 'next'
-import { getServerSession, type NextAuthOptions, type DefaultSession } from 'next-auth'
+import { type DefaultSession, getServerSession, type NextAuthOptions } from 'next-auth'
 import TwitterProvider from 'next-auth/providers/twitter'
 import DiscordProvider from 'next-auth/providers/discord'
 import CredentialsProvider from 'next-auth/providers/credentials'
@@ -21,6 +21,7 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string
+      address?: string
       // ...other properties
       // role: UserRole;
     } & DefaultSession['user']
@@ -96,37 +97,54 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
           nonce: await getCsrfToken({ req: { headers: req?.headers } }),
         })
 
-        // Check if user exists
+        if (!result.success) {
+          throw new Error('Verification Failed')
+        }
+
+        // Check if wallet address exist, if yes return user id associated with the wallet
         const walletAddress = result.data.address
-        let user = await prisma.user.findUnique({
+        const existingAccount = await prisma.account.findFirst({
           where: {
+            providerAccountId: walletAddress,
+          },
+          select: {
+            userId: true,
+            providerAccountId: true,
+            user: {
+              select: {
+                image: true,
+                name: true,
+              },
+            },
+          },
+        })
+        if (existingAccount) {
+          return {
+            id: existingAccount.userId,
+            name: existingAccount.user.name,
+            image: existingAccount.user.image,
+          }
+        }
+
+        // Create new user and account if wallet doesn't exist in account collection
+        const user = await prisma.user.create({
+          data: {
             address: walletAddress,
           },
         })
+        await prisma.account.create({
+          data: {
+            userId: user.id,
+            type: 'credentials',
+            provider: 'Ethereum',
+            providerAccountId: walletAddress,
+          },
+        })
 
-        // Create new user if user doesn't exist
-        if (!user) {
-          user = await prisma.user.create({
-            data: {
-              address: walletAddress,
-            },
-          })
-          await prisma.account.create({
-            data: {
-              userId: user.id,
-              type: 'credentials',
-              provider: 'Ethereum',
-              providerAccountId: walletAddress,
-            },
-          })
+        return {
+          id: user.id,
+          name: user.address,
         }
-
-        if (result.success) {
-          return {
-            id: user.id,
-          }
-        }
-        return null
       },
     }),
     /**

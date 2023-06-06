@@ -1,8 +1,8 @@
-import Document, { type DocumentContext } from 'next/document'
+import Document, { type DocumentContext, Html, Main, NextScript, Head } from 'next/document'
 import { ServerStyles, createStylesServer } from '@mantine/next'
-import { rtlCache } from '@/utils/rtl-cache'
+import { emotionCache } from '@/utils/emotion-cache'
 
-const stylesServer = createStylesServer(rtlCache)
+const stylesServer = createStylesServer(emotionCache)
 
 export default class _Document extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -19,5 +19,26 @@ export default class _Document extends Document {
         />,
       ],
     }
+  }
+
+  render() {
+    return (
+      <Html>
+        <Head>
+          <meta
+            name="description"
+            content="Airdawg Creator"
+          />
+          <link
+            rel="icon"
+            href="/favicon.ico"
+          />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    )
   }
 }
