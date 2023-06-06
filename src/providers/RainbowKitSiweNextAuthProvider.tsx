@@ -69,6 +69,7 @@ export function RainbowKitSiweNextAuthProvider({ children, enabled, getSiweMessa
             message: JSON.stringify(message),
             redirect: false,
             signature,
+            callbackUrl: window.location.origin,
           })
 
           return response?.ok ?? false
