@@ -8,6 +8,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useDidUpdate } from '@mantine/hooks'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
+import { env } from '@/env.mjs'
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getSession(context)
@@ -21,11 +22,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   }
   return {
-    props: {},
+    props: {
+      nextAuthUrl: env.NEXTAUTH_URL,
+    },
   }
 }
 
-const Home: NextPage = () => {
+const Home = ({ nextAuthUrl }: { nextAuthUrl: string }) => {
   const callbackUrl = '/dashboard/perks'
   const { openConnectModal } = useConnectModal()
 
@@ -43,6 +46,7 @@ const Home: NextPage = () => {
       <Head>
         <title>Airdawg - Sign in</title>
       </Head>
+      <p>{nextAuthUrl}</p>
       <Container
         size="xs"
         mt={140}
