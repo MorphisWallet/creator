@@ -1,4 +1,4 @@
-import { type GetServerSidePropsContext, type NextPage } from 'next'
+import { type GetServerSidePropsContext } from 'next'
 import { getSession, signIn, useSession } from 'next-auth/react'
 import { Button, Center, Container, Stack } from '@mantine/core'
 import { IconBrandTwitter, IconCurrencyEthereum, IconBrandDiscord } from '@tabler/icons-react'
@@ -8,7 +8,6 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useDidUpdate } from '@mantine/hooks'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
-import { env } from '@/env.mjs'
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getSession(context)
@@ -22,13 +21,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
   }
   return {
-    props: {
-      nextAuthUrl: env.NEXTAUTH_URL,
-    },
+    props: {},
   }
 }
 
-const Home = ({ nextAuthUrl }: { nextAuthUrl: string }) => {
+const Home = () => {
   const callbackUrl = '/dashboard/perks'
   const { openConnectModal } = useConnectModal()
 
@@ -46,7 +43,6 @@ const Home = ({ nextAuthUrl }: { nextAuthUrl: string }) => {
       <Head>
         <title>Airdawg - Sign in</title>
       </Head>
-      <p>{nextAuthUrl}</p>
       <Container
         size="xs"
         mt={140}
