@@ -39,6 +39,7 @@ declare module 'next-auth' {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => ({
+  debug: true,
   callbacks: {
     session: ({ session, user, token }) => {
       const id = token?.sub ?? user.id

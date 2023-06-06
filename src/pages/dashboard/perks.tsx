@@ -2,7 +2,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { type GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
 import { prisma } from '@/server/db'
-import { Alert, Box, Button, Text } from '@mantine/core'
+import { Alert, Box, Button } from '@mantine/core'
 import { IconAlertCircle } from '@tabler/icons-react'
 import Head from 'next/head'
 
