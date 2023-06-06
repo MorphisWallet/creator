@@ -90,15 +90,12 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
         const siweValidationResult = siweSchema.parse(JSON.parse(credentials?.message || '{}'))
         const siwe = new SiweMessage(siweValidationResult)
         const nextAuthUrl = new URL(env.NEXTAUTH_URL)
-        console.log('nextAuthUrl', nextAuthUrl.host)
 
         const result = await siwe.verify({
           signature: credentials?.signature || '',
           domain: nextAuthUrl.host,
           nonce: await getCsrfToken({ req: { headers: req?.headers } }),
         })
-
-        console.log('siwe', result)
 
         if (!result.success) {
           throw new Error('Verification Failed')
