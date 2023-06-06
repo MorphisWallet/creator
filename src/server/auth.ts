@@ -90,7 +90,7 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
         })
         const siweValidationResult = siweSchema.parse(JSON.parse(credentials?.message || '{}'))
         const siwe = new SiweMessage(siweValidationResult)
-        const nextAuthUrl = new URL(env.NEXTAUTH_URL)
+        const nextAuthUrl = new URL(env.SIWE_URL)
 
         const result = await siwe.verify({
           signature: credentials?.signature || '',
