@@ -13,10 +13,11 @@ import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import '@rainbow-me/rainbowkit/styles.css'
 import { Notifications } from '@mantine/notifications'
 import { type GetSiweMessageOptions, RainbowKitSiweNextAuthProvider } from '@/providers/RainbowKitSiweNextAuthProvider'
+import { env } from '@/env.mjs'
 
 const { chains, publicClient } = configureChains(
   [mainnet, polygon, bsc],
-  [alchemyProvider({ apiKey: 'xWKRsnhQ3Jeql1pwk5YRacvcguBZPGtz' }), publicProvider()]
+  [alchemyProvider({ apiKey: env.NEXT_PUBLIC_ALCHEMY_API_KEY }), publicProvider()]
 )
 
 const { connectors } = getDefaultWallets({
