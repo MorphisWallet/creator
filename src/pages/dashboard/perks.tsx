@@ -52,7 +52,7 @@ export default function Perks({ hasVerifiedTwitter }: Props) {
         <title>Airdawg - Perks</title>
       </Head>
       <h1>Perks</h1>
-      <Box>{!hasVerifiedTwitter ? <VerificationAlert /> : <Button>Create new perk</Button>}</Box>
+      <Box>{!hasVerifiedTwitter ? <VerificationAlert /> : <Button>Create New Allowlist</Button>}</Box>
     </DashboardLayout>
   )
 }

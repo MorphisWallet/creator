@@ -1,6 +1,6 @@
 import { getSession, signIn } from 'next-auth/react'
 import { type GetServerSideProps } from 'next'
-import { Button, Group, Stack, Text } from '@mantine/core'
+import { Button, Group, Space, Stack, Text } from '@mantine/core'
 import { IconBrandDiscord, IconBrandTwitter, IconCheck, IconCurrencyEthereum } from '@tabler/icons-react'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { prisma } from '@/server/db'
@@ -12,9 +12,11 @@ import { notifications } from '@mantine/notifications'
 import { useState } from 'react'
 import { useDidUpdate } from '@mantine/hooks'
 import Head from 'next/head'
+import { ProjectInfo, type ProjectInfoProps } from '@/components/project/ProjectInfo'
 
 type Props = {
   providers: string[]
+  project: ProjectInfoProps
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
@@ -36,14 +38,25 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     },
   })
 
+  const project = await prisma.project.findUnique({
+    where: {
+      userId: session.user.id,
+    },
+  })
+
   return {
     props: {
       providers: providers.map(provider => provider.provider),
+      project: {
+        name: project?.name ?? '',
+        description: project?.description ?? '',
+        link: project?.link ?? '',
+      },
     },
   }
 }
 
-export default function Project({ providers }: Props) {
+export default function Project({ providers, project }: Props) {
   const callbackUrl = '/dashboard/project'
   const isTwitterVerified = providers.some(provider => provider === 'twitter')
   const isDiscordVerified = providers.some(provider => provider === 'discord')
@@ -152,6 +165,8 @@ export default function Project({ providers }: Props) {
           </Button>
         )}
       </Stack>
+      <Space h={'md'} />
+      <ProjectInfo {...project} />
     </DashboardLayout>
   )
 }

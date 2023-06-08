@@ -17,8 +17,8 @@ datasource db {
 
 // Necessary for Next auth
 model Account {
-  id                String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String  @db.ObjectId
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId
   type              String
   provider          String
   providerAccountId String
@@ -29,7 +29,9 @@ model Account {
   scope             String?
   id_token          String? // @db.Text
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@unique([provider, providerAccountId])
   @@map("creator_account")
@@ -54,6 +56,9 @@ model User {
   accounts      Account[]
   sessions      Session[]
   address       String?   @unique
+  project       Project?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@map("creator_user")
 }
@@ -66,4 +71,17 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("creator_verification_token")
+}
+
+model Project {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @unique @db.ObjectId
+  name        String
+  description String
+  link        String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("creator_project")
 }
