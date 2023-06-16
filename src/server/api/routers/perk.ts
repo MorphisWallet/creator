@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 import { prisma } from '@/server/db'
 import { TokenType, TokenRequirementBlockChain, type Prisma, PerkStatus } from '@prisma/client'
-import { getNftContractMetadata, getTokenMetadata } from '@/libs'
+import { createPerkOnAWSService, getNftContractMetadata, getTokenMetadata } from '@/libs'
 import { convertTokenRequirementNetworkToAlchemyNetwork } from '@/components/perk/TokenRequirement'
 import { createNftAllowListPerkSchema } from '@/schemas'
 
@@ -131,13 +131,46 @@ export const perkRouter = createTRPCRouter({
         },
         data: isPublishedPerk ? publishedUpdateData : createAndUpdateData,
       })
+      if (isPublishedPerk) {
+        await createPerkOnAWSService({
+          name: input.name,
+          description: input.description,
+          featureImage: '',
+          contractAddress: '',
+          activeDate: input.startDate.toISOString(),
+          expireDate: input.endDate.toISOString(),
+          chain: input.blockchain,
+          id: input.perkId,
+          status: 'active',
+          linkToClaim: '',
+          requirement: {
+            tokenHolder: input.tokenHolderRequirement,
+          },
+        })
+      }
 
       return {
         message: 'Perk Updated',
       }
     } else {
-      await prisma.perk.create({
+      const result = await prisma.perk.create({
         data: createAndUpdateData,
+      })
+
+      await createPerkOnAWSService({
+        name: input.name,
+        description: input.description,
+        featureImage: '',
+        contractAddress: '',
+        activeDate: input.startDate.toISOString(),
+        expireDate: input.endDate.toISOString(),
+        chain: input.blockchain,
+        id: result.id,
+        status: 'active',
+        linkToClaim: '',
+        requirement: {
+          tokenHolder: input.tokenHolderRequirement,
+        },
       })
       return {
         message: 'Perk Published',
