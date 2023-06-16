@@ -33,13 +33,22 @@ declare module 'next-auth' {
   // }
 }
 
+type TwitterProfile = {
+  data: {
+    id: string
+    name: string
+    email: string | null
+    profile_image_url: string
+    username: string
+  }
+}
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => ({
-  debug: true,
   callbacks: {
     session: ({ session, user, token }) => {
       const id = token?.sub ?? user.id
@@ -54,10 +63,24 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    TwitterProvider({
+    TwitterProvider<TwitterProfile>({
       clientId: env.TWITTER_CLIENT_ID,
       clientSecret: env.TWITTER_CLIENT_SECRET,
       version: '2.0',
+      profile({ data }) {
+        return {
+          id: data.id,
+          name: data.name,
+          email: null,
+          image: data.profile_image_url,
+          twitter: {
+            id: data.id,
+            name: data.username,
+            username: data.username,
+            image: data.profile_image_url,
+          },
+        }
+      },
     }),
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
@@ -161,6 +184,7 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
   ],
   session: {
     strategy: 'jwt',
+    maxAge: 60 * 60 * 24 * 2, // 2 days
   },
   secret: env.NEXTAUTH_SECRET,
 })

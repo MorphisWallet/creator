@@ -15,7 +15,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (session) {
     return {
       redirect: {
-        destination: '/dashboard/project',
+        destination: '/dashboard/perks',
         permanent: false,
       },
     }

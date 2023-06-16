@@ -2,12 +2,15 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { type GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
 import { prisma } from '@/server/db'
-import { Alert, Box, Button } from '@mantine/core'
+import { Alert, Box, Button, Stack, Space } from '@mantine/core'
 import { IconAlertCircle } from '@tabler/icons-react'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { PerkList } from '@/components/perk/PerkList'
 
 type Props = {
   hasVerifiedTwitter: boolean
+  hasCreatedProject: boolean
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
@@ -27,32 +30,56 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     },
   })
 
+  const project = await prisma.project.findUnique({
+    where: {
+      userId: session.user.id,
+    },
+  })
+
+  const hasVerifiedTwitter = Boolean(providers)
+  const hasCreatedProject = Boolean(project)
+
   return {
     props: {
-      hasVerifiedTwitter: Boolean(providers),
+      hasVerifiedTwitter,
+      hasCreatedProject,
     },
   }
 }
 
-const VerificationAlert = () => {
+const VerificationAlert = ({ message }: { message: string }) => {
   return (
     <Alert
       icon={<IconAlertCircle size="1rem" />}
       color="orange"
     >
-      You have not verified your Twitter account yet. Please verify your Twitter to create perks.
+      {message}
     </Alert>
   )
 }
 
-export default function Perks({ hasVerifiedTwitter }: Props) {
+export default function Perks({ hasVerifiedTwitter, hasCreatedProject }: Props) {
+  const { push } = useRouter()
+
   return (
     <DashboardLayout>
       <Head>
         <title>Airdawg - Perks</title>
       </Head>
       <h1>Perks</h1>
-      <Box>{!hasVerifiedTwitter ? <VerificationAlert /> : <Button>Create New Allowlist</Button>}</Box>
+      <Box>
+        <Stack>
+          {!hasVerifiedTwitter && (
+            <VerificationAlert message={'You have not verified your Twitter account yet. Please verify your Twitter to create perks.'} />
+          )}
+          {!hasCreatedProject && <VerificationAlert message="Please Fill in project information first" />}
+        </Stack>
+        {hasVerifiedTwitter && hasCreatedProject && (
+          <Button onClick={() => void push('/dashboard/allowlist/create')}>Create New Allowlist</Button>
+        )}
+        <Space h={'md'} />
+        {hasVerifiedTwitter && hasCreatedProject && <PerkList />}
+      </Box>
     </DashboardLayout>
   )
 }

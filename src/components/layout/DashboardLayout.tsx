@@ -16,6 +16,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Sidebar />
       <Box
         w={'100%'}
+        mah={'100vh'}
+        sx={{ overflow: 'auto' }}
         p={16}
       >
         <UserProfile />

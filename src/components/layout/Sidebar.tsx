@@ -78,6 +78,9 @@ export const Sidebar = () => {
       mih="100vh"
       width={{ sm: 300 }}
       p="md"
+      sx={{
+        zIndex: 99,
+      }}
     >
       <Navbar.Section grow>
         <Center mb={32}>

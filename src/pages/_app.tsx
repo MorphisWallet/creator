@@ -4,6 +4,7 @@ import { type AppType } from 'next/app'
 import { api } from '@/utils/api'
 import '@/styles/globals.css'
 import { MantineProvider } from '@mantine/core'
+import { ModalsProvider } from '@mantine/modals'
 import { emotionCache } from '@/utils/emotion-cache'
 import { configureChains, createConfig, WagmiConfig } from 'wagmi'
 import { bsc, mainnet, polygon } from 'wagmi/chains'
@@ -45,15 +46,17 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
           withNormalizeCSS
           emotionCache={emotionCache}
         >
-          <Notifications position="top-right" />
-          <RainbowKitSiweNextAuthProvider getSiweMessageOptions={getSiweMessageOptions}>
-            <RainbowKitProvider
-              chains={chains}
-              modalSize={'compact'}
-            >
-              <Component {...pageProps} />
-            </RainbowKitProvider>
-          </RainbowKitSiweNextAuthProvider>
+          <ModalsProvider>
+            <Notifications position="top-right" />
+            <RainbowKitSiweNextAuthProvider getSiweMessageOptions={getSiweMessageOptions}>
+              <RainbowKitProvider
+                chains={chains}
+                modalSize={'compact'}
+              >
+                <Component {...pageProps} />
+              </RainbowKitProvider>
+            </RainbowKitSiweNextAuthProvider>
+          </ModalsProvider>
         </MantineProvider>
       </SessionProvider>
     </WagmiConfig>

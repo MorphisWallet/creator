@@ -24,6 +24,10 @@ export const env = createEnv({
     DISCORD_CLIENT_ID: z.string().min(1),
     DISCORD_CLIENT_SECRET: z.string().min(1),
     SIWE_URL: z.string().url(),
+    S3_UPLOAD_KEY: z.string().min(1),
+    S3_UPLOAD_SECRET: z.string().min(1),
+    S3_UPLOAD_BUCKET: z.string().min(1),
+    S3_UPLOAD_REGION: z.string().min(1),
   },
 
   /**
@@ -50,6 +54,10 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     SIWE_URL: process.env.SIWE_URL,
     NEXT_PUBLIC_ALCHEMY_API_KEY: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+    S3_UPLOAD_KEY: process.env.S3_UPLOAD_KEY,
+    S3_UPLOAD_SECRET: process.env.S3_UPLOAD_SECRET,
+    S3_UPLOAD_BUCKET: process.env.S3_UPLOAD_BUCKET,
+    S3_UPLOAD_REGION: process.env.S3_UPLOAD_REGION,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
