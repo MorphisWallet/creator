@@ -28,6 +28,8 @@ export const env = createEnv({
     S3_UPLOAD_SECRET: z.string().min(1),
     S3_UPLOAD_BUCKET: z.string().min(1),
     S3_UPLOAD_REGION: z.string().min(1),
+    ETHERSCAN_API_KEY: z.string().min(1),
+    POLYGONSCAN_API_KEY: z.string().min(1),
   },
 
   /**
@@ -58,6 +60,8 @@ export const env = createEnv({
     S3_UPLOAD_SECRET: process.env.S3_UPLOAD_SECRET,
     S3_UPLOAD_BUCKET: process.env.S3_UPLOAD_BUCKET,
     S3_UPLOAD_REGION: process.env.S3_UPLOAD_REGION,
+    ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
+    POLYGONSCAN_API_KEY: process.env.POLYGONSCAN_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
