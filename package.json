@@ -18,6 +18,7 @@
   "packageManager": "pnpm@8.0.0+",
   "dependencies": {
     "-": "^0.0.1",
+    "@aws-sdk/client-s3": "^3.353.0",
     "@aws-sdk/s3-request-presigner": "^3.352.0",
     "@emotion/react": "^11.11.0",
     "@mantine/core": "^6.0.13",
