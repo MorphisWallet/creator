@@ -114,6 +114,7 @@ model Perk {
   user                   User                    @relation(fields: [userId], references: [id])
   allowList              AllowList?
   tokenHolderRequirement TokenHolderRequirement?
+  twitterRequirement     TwitterRequirement[]
 
   @@map("creator_perk")
 }
@@ -167,4 +168,17 @@ enum PerkBlockchain {
 enum TokenRequirementBlockChain {
   Etherum
   Polygon
+}
+
+type TwitterRequirement {
+  type  TwitterRequirementType
+  value String
+}
+
+enum TwitterRequirementType {
+  Follow
+  Like
+  Reply
+  Retweet
+  JoinSpace
 }

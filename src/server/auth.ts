@@ -24,6 +24,9 @@ declare module 'next-auth' {
       address?: string
       // ...other properties
       // role: UserRole;
+      twitter: {
+        username: string
+      }
     } & DefaultSession['user']
   }
 
@@ -50,13 +53,29 @@ type TwitterProfile = {
  */
 export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => ({
   callbacks: {
-    session: ({ session, user, token }) => {
+    session: async ({ session, user, token }) => {
       const id = token?.sub ?? user.id
+      const twitterUserName = await prisma.user.findFirst({
+        where: {
+          id,
+        },
+        select: {
+          twitter: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      })
+
       return {
         ...session,
         user: {
           ...session.user,
           id,
+          twitter: {
+            username: twitterUserName?.twitter?.username ?? '',
+          },
         },
       }
     },

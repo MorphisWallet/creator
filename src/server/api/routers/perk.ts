@@ -92,6 +92,8 @@ export const perkRouter = createTRPCRouter({
     })
     await Promise.all(contractPromises)
 
+    console.log(input.twitterRequirement)
+
     const createAndUpdateData = {
       name: input.name,
       description: input.description,
@@ -110,6 +112,23 @@ export const perkRouter = createTRPCRouter({
         price: input.price,
       },
       tokenHolderRequirement: input.tokenHolderRequirement === undefined ? null : input.tokenHolderRequirement,
+      twitterRequirement: input.twitterRequirement === undefined ? [] : input.twitterRequirement,
+    }
+
+    const dataForAws = {
+      name: input.name,
+      description: input.description,
+      featureImage: '',
+      contractAddress: '',
+      activeDate: input.startDate.toISOString(),
+      expireDate: input.endDate.toISOString(),
+      chain: input.blockchain,
+      status: 'active',
+      linkToClaim: '',
+      requirement: {
+        tokenHolder: input.tokenHolderRequirement,
+        twitterRequirement: input.twitterRequirement,
+      },
     }
 
     if (input.perkId) {
@@ -133,19 +152,8 @@ export const perkRouter = createTRPCRouter({
       })
       if (isPublishedPerk) {
         await createPerkOnAWSService({
-          name: input.name,
-          description: input.description,
-          featureImage: '',
-          contractAddress: '',
-          activeDate: input.startDate.toISOString(),
-          expireDate: input.endDate.toISOString(),
-          chain: input.blockchain,
+          ...dataForAws,
           id: input.perkId,
-          status: 'active',
-          linkToClaim: '',
-          requirement: {
-            tokenHolder: input.tokenHolderRequirement,
-          },
         })
       }
 
@@ -158,20 +166,10 @@ export const perkRouter = createTRPCRouter({
       })
 
       await createPerkOnAWSService({
-        name: input.name,
-        description: input.description,
-        featureImage: '',
-        contractAddress: '',
-        activeDate: input.startDate.toISOString(),
-        expireDate: input.endDate.toISOString(),
-        chain: input.blockchain,
+        ...dataForAws,
         id: result.id,
-        status: 'active',
-        linkToClaim: '',
-        requirement: {
-          tokenHolder: input.tokenHolderRequirement,
-        },
       })
+
       return {
         message: 'Perk Published',
       }

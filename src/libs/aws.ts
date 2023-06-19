@@ -4,7 +4,7 @@ type CreatePerkInput = {
   id: string
   name: string
   description: string
-  featureImage: ''
+  featureImage: string
   requirement: object
   linkToClaim: string
   status: string

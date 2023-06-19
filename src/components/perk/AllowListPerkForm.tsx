@@ -9,9 +9,10 @@ import { api } from '@/utils/api'
 import { notifications } from '@mantine/notifications'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import { createNftAllowListPerkSchema } from '@/schemas'
+import { createNftAllowListPerkSchema, type TwitterRequirementSchemaType } from '@/schemas'
 import { type CreateNftAllowListPerkSchemaType, type TokenRequirementSchemaType } from '@/server/api/routers/perk'
 import { modals } from '@mantine/modals'
+import { TwitterRequirement, useTwitterRequirementStore } from '@/components/perk/TwitterRequirement'
 
 type Props = {
   perk?: Perk
@@ -114,16 +115,20 @@ export const AllowListPerkForm = ({ perk }: Props) => {
     secondTokenRequirementType,
     firstTokenRequirement,
     secondTokenRequirement,
-    reset,
+    resetTokenRequirement,
     setEnableTokenRequirement,
     setSecondTokenRequirementType,
     setTokenRequirement,
   } = useTokenRequirementStore()
 
+  const { twitterRequirement, enableTwitterRequirement, resetTwitterRequirement, setTwitterRequirement, setEnableTwitterRequirement } =
+    useTwitterRequirementStore()
+
   useEffect(() => {
-    reset()
+    resetTokenRequirement()
+    resetTwitterRequirement()
     if (perk) {
-      const { tokenHolderRequirement } = perk
+      const { tokenHolderRequirement, twitterRequirement } = perk
       if (tokenHolderRequirement) {
         setEnableTokenRequirement(true)
         if (tokenHolderRequirement.tokenRequirement[0]) {
@@ -163,26 +168,23 @@ export const AllowListPerkForm = ({ perk }: Props) => {
           )
         }
       }
+
+      if (twitterRequirement && twitterRequirement.length > 0) {
+        setEnableTwitterRequirement(true)
+        setTwitterRequirement(twitterRequirement)
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const createOrUpdatePerk = (data: unknown) => {
-    const zodResult = createNftAllowListPerkSchema.parse(data)
+  const createOrUpdatePerk = (data: Partial<CreateNftAllowListPerkSchemaType>) => {
+    const resultToParse = {
+      ...data,
+      perkType: PerkType.Allowlist,
+    }
 
-    const payload: CreateNftAllowListPerkSchemaType = {
-      name: zodResult.name,
-      description: zodResult.description,
-      perkType: zodResult.perkType,
-      blockchain: zodResult.blockchain,
-      spot: zodResult.spot,
-      price: zodResult.price,
-      priceSymbol: zodResult.priceSymbol,
-      totalSupply: zodResult.totalSupply,
-      startDate: zodResult.startDate,
-      endDate: zodResult.endDate,
-      status: zodResult.status,
-      perkId: perk?.id,
+    if (perk?.id) {
+      resultToParse.perkId = perk.id
     }
 
     if (enableTokenRequirement) {
@@ -200,12 +202,19 @@ export const AllowListPerkForm = ({ perk }: Props) => {
       }
       const contractAddresses = tokenRequirement.map(token => token.contractAddress)
       const mustHoldTokenContracts = secondTokenRequirementType === 'AND' ? contractAddresses : []
-      payload.tokenHolderRequirement = {
+      resultToParse.tokenHolderRequirement = {
         mustHoldTokenContracts,
         tokenRequirement,
       }
     }
-    mutate(payload)
+
+    if (enableTwitterRequirement) {
+      resultToParse.twitterRequirement = twitterRequirement.filter(requirement => requirement.type !== '') as TwitterRequirementSchemaType[]
+    }
+
+    const zodResult = createNftAllowListPerkSchema.parse(resultToParse)
+
+    mutate(zodResult)
   }
 
   const openModal = () =>
@@ -218,7 +227,6 @@ export const AllowListPerkForm = ({ perk }: Props) => {
         if (!hasErrors) {
           createOrUpdatePerk({
             ...form.values,
-            perkType: PerkType.Allowlist,
             status: PerkStatus.Draft,
           })
         }
@@ -230,7 +238,6 @@ export const AllowListPerkForm = ({ perk }: Props) => {
       onSubmit={form.onSubmit(values => {
         createOrUpdatePerk({
           ...values,
-          perkType: PerkType.Allowlist,
           status: PerkStatus.Published,
         })
       })}
@@ -307,6 +314,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
 
         <FeaturedImage />
         <TokenRequirement disabled={isPublished} />
+        <TwitterRequirement disabled={isPublished} />
 
         <Group>
           <Button

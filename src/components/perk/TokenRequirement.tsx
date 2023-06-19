@@ -30,7 +30,7 @@ type TokenRequirementStore = {
   secondTokenRequirementType: '' | 'AND' | 'OR'
   setSecondTokenRequirementType: (secondTokenRequirementType: '' | 'AND' | 'OR') => void
   secondTokenRequirement: TokenRequirementProps
-  reset: () => void
+  resetTokenRequirement: () => void
   setTokenRequirement: (
     tokenRequirement: Pick<
       TokenRequirementProps,
@@ -132,7 +132,7 @@ export const useTokenRequirementStore = create<TokenRequirementStore>(set => ({
         secondTokenRequirement: { ...state.secondTokenRequirement, logoUrl },
       })),
   },
-  reset: () =>
+  resetTokenRequirement: () =>
     set(state => ({
       ...state,
       enableTokenRequirement: false,
@@ -294,6 +294,7 @@ export const TokenRequirement = ({ disabled }: { disabled?: boolean }) => {
         <h2>Token holders</h2>
         <Switch
           checked={enableTokenRequirement}
+          disabled={disabled}
           onChange={() => setEnableTokenRequirement(!enableTokenRequirement)}
         />
       </Group>
