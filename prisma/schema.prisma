@@ -115,6 +115,7 @@ model Perk {
   allowList              AllowList?
   tokenHolderRequirement TokenHolderRequirement?
   twitterRequirement     TwitterRequirement[]
+  walletInteraction      WalletInteraction[]
 
   @@map("creator_perk")
 }
@@ -181,4 +182,24 @@ enum TwitterRequirementType {
   Reply
   Retweet
   JoinSpace
+}
+
+type WalletInteraction {
+  blockchain            WalletInteractionBlockchain
+  contract              String
+  intraction            String
+  interactionCount      Int
+  interactionPeriod     Int
+  interactionPeriodType InteractionPeriodType
+}
+
+enum WalletInteractionBlockchain {
+  Etherum
+  Polygon
+}
+
+enum InteractionPeriodType {
+  Day
+  Month
+  Year
 }

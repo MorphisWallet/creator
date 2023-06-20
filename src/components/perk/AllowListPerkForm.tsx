@@ -13,6 +13,7 @@ import { createNftAllowListPerkSchema, type TwitterRequirementSchemaType } from 
 import { type CreateNftAllowListPerkSchemaType, type TokenRequirementSchemaType } from '@/server/api/routers/perk'
 import { modals } from '@mantine/modals'
 import { TwitterRequirement, useTwitterRequirementStore } from '@/components/perk/TwitterRequirement'
+import { WalletInteractionRequirement } from '@/components/perk/WalletInteractionRequirement'
 
 type Props = {
   perk?: Perk
@@ -311,11 +312,10 @@ export const AllowListPerkForm = ({ perk }: Props) => {
             disabled={isPublished}
           />
         </Group>
-
         <FeaturedImage />
         <TokenRequirement disabled={isPublished} />
         <TwitterRequirement disabled={isPublished} />
-
+        <WalletInteractionRequirement />
         <Group>
           <Button
             onClick={() => {

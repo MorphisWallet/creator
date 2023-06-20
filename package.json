@@ -57,6 +57,7 @@
     "viem": "^0.3.40",
     "wagmi": "^1.0.9",
     "zod": "^3.21.4",
+    "zod_utilz": "^0.7.3",
     "zustand": "^4.3.8"
   },
   "devDependencies": {
