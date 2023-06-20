@@ -158,7 +158,7 @@ enum PerkType {
 }
 
 enum PerkBlockchain {
-  Etherum
+  Ethereum
   Polygon
   Solana
   Sui
@@ -166,7 +166,7 @@ enum PerkBlockchain {
 }
 
 enum TokenRequirementBlockChain {
-  Etherum
+  Ethereum
   Polygon
 }
 

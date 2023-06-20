@@ -7,7 +7,7 @@ import { prisma } from '@/server/db'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useAccount, useSignMessage } from 'wagmi'
 import { api } from '@/utils/api'
-import { EtherumVerificationMessage } from '@/constants'
+import { EthereumVerificationMessage } from '@/constants'
 import { notifications } from '@mantine/notifications'
 import { useState } from 'react'
 import { useDidUpdate } from '@mantine/hooks'
@@ -61,12 +61,12 @@ export default function Project({ providers, project }: Props) {
   const isTwitterVerified = providers.some(provider => provider === 'twitter')
   const isDiscordVerified = providers.some(provider => provider === 'discord')
   const [isAddressVerified, setIsAddressVerified] = useState(false)
-  const isEtherumVerified = providers.some(provider => provider === 'Ethereum') || isAddressVerified
+  const isEthereumVerified = providers.some(provider => provider === 'Ethereum') || isAddressVerified
   const { openConnectModal } = useConnectModal()
   const [isConnectingWallet, setIsConnectingWallet] = useState(false)
   const { isConnected, address } = useAccount()
   const { signMessageAsync, isLoading: isSigningMessage } = useSignMessage()
-  const { mutate, isLoading: isMakingRequestToSignMessage } = api.auth.verifyEtherumAddress.useMutation({
+  const { mutate, isLoading: isMakingRequestToSignMessage } = api.auth.verifyEthereumAddress.useMutation({
     onError: error => {
       notifications.show({
         title: 'Error',
@@ -87,7 +87,7 @@ export default function Project({ providers, project }: Props) {
   const handleLogin = async () => {
     if (address) {
       try {
-        const signature = await signMessageAsync({ message: EtherumVerificationMessage })
+        const signature = await signMessageAsync({ message: EthereumVerificationMessage })
         mutate({
           address: address,
           signature: signature,
@@ -98,7 +98,7 @@ export default function Project({ providers, project }: Props) {
     }
   }
 
-  const handleConnectEtherum = () => {
+  const handleConnectEthereum = () => {
     if (isConnected) {
       void handleLogin()
     } else if (openConnectModal) {
@@ -148,7 +148,7 @@ export default function Project({ providers, project }: Props) {
             Verify Discord
           </Button>
         )}
-        {isEtherumVerified ? (
+        {isEthereumVerified ? (
           <Group>
             <IconCurrencyEthereum />
             <Text>Wallet Address Verified</Text>
@@ -157,7 +157,7 @@ export default function Project({ providers, project }: Props) {
         ) : (
           <Button
             leftIcon={<IconCurrencyEthereum />}
-            onClick={handleConnectEtherum}
+            onClick={handleConnectEthereum}
             color={'indigo'}
             loading={isSigningMessage || isMakingRequestToSignMessage}
           >

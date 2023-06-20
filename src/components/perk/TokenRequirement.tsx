@@ -42,7 +42,7 @@ type TokenRequirementStore = {
 
 export const convertTokenRequirementNetworkToAlchemyNetwork = (network: TokenRequirementBlockChain): Network => {
   switch (network) {
-    case 'Etherum':
+    case 'Ethereum':
       return Network.ETH_MAINNET
     case 'Polygon':
       return Network.MATIC_MAINNET
@@ -55,7 +55,7 @@ export const useTokenRequirementStore = create<TokenRequirementStore>(set => ({
   enableTokenRequirement: false,
   setEnableTokenRequirement: enableTokenRequirement => set({ enableTokenRequirement }),
   firstTokenRequirement: {
-    blockchain: 'Etherum',
+    blockchain: 'Ethereum',
     disabled: false,
     setBlockchain: blockchain =>
       set(state => ({
@@ -95,7 +95,7 @@ export const useTokenRequirementStore = create<TokenRequirementStore>(set => ({
   secondTokenRequirementType: '',
   setSecondTokenRequirementType: secondTokenRequirementType => set({ secondTokenRequirementType }),
   secondTokenRequirement: {
-    blockchain: 'Etherum',
+    blockchain: 'Ethereum',
     disabled: false,
     setBlockchain: blockchain =>
       set(state => ({
@@ -138,7 +138,7 @@ export const useTokenRequirementStore = create<TokenRequirementStore>(set => ({
       enableTokenRequirement: false,
       firstTokenRequirement: {
         ...state.firstTokenRequirement,
-        blockchain: 'Etherum',
+        blockchain: 'Ethereum',
         tokenType: 'Token',
         contractAddress: '',
         mustHoldAmount: 0,
@@ -149,7 +149,7 @@ export const useTokenRequirementStore = create<TokenRequirementStore>(set => ({
       secondTokenRequirementType: '',
       secondTokenRequirement: {
         ...state.secondTokenRequirement,
-        blockchain: 'Etherum',
+        blockchain: 'Ethereum',
         tokenType: 'Token',
         contractAddress: '',
         mustHoldAmount: 0,
@@ -197,7 +197,7 @@ const TokenRequirementForm = ({
   ]
   const blockchainSelectData = [
     {
-      value: TokenRequirementBlockChain.Etherum,
+      value: TokenRequirementBlockChain.Ethereum,
       label: 'Ethereum',
     },
     {

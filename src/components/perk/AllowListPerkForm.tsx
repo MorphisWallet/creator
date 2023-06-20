@@ -37,7 +37,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
     initialValues: {
       name: perk?.name ?? '',
       description: perk?.description ?? '',
-      blockchain: perk?.blockchain ?? 'Etherum',
+      blockchain: perk?.blockchain ?? 'Ethereum',
       spot: perk?.allowList?.spots ?? 0,
       startDate: perk?.startDate,
       endDate: perk?.endDate,

@@ -1,11 +1,11 @@
 import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 import { type Hex, recoverMessageAddress } from 'viem'
-import { EtherumVerificationMessage } from '@/constants'
+import { EthereumVerificationMessage } from '@/constants'
 import { prisma } from '@/server/db'
 
 export const authRouter = createTRPCRouter({
-  verifyEtherumAddress: protectedProcedure
+  verifyEthereumAddress: protectedProcedure
     .input(
       z.object({
         signature: z.string(),
@@ -15,7 +15,7 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { address, signature } = input
       const recoveredAddress = await recoverMessageAddress({
-        message: EtherumVerificationMessage,
+        message: EthereumVerificationMessage,
         signature: signature as Hex,
       })
       if (recoveredAddress !== address) {
