@@ -15,16 +15,6 @@ type Props = {
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const session = await getSession(context)
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    }
-  }
-
   const id = context.params?.id
   if (!id || typeof id !== 'string') {
     return {

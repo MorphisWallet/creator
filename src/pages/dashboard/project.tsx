@@ -21,17 +21,10 @@ type Props = {
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
   const session = await getSession(context)
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    }
-  }
+
   const providers = await prisma.account.findMany({
     where: {
-      userId: session.user.id,
+      userId: session?.user.id,
     },
     select: {
       provider: true,
@@ -40,7 +33,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
 
   const project = await prisma.project.findUnique({
     where: {
-      userId: session.user.id,
+      userId: session?.user.id,
     },
   })
 
