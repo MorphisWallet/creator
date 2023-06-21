@@ -5,6 +5,7 @@ import { TokenType, TokenRequirementBlockChain, type Prisma, PerkStatus } from '
 import { createPerkOnAWSService, getNftContractMetadata, getTokenMetadata } from '@/libs'
 import { convertTokenRequirementNetworkToAlchemyNetwork } from '@/components/perk/TokenRequirement'
 import { createNftAllowListPerkSchema } from '@/schemas'
+import { verifyContractFunction } from '@/libs/contract'
 
 const tokenRequirementSchema = z.object({
   tokenType: z.nativeEnum(TokenType),
@@ -80,6 +81,7 @@ export const perkRouter = createTRPCRouter({
       },
     })
 
+    const promises: Promise<unknown>[] = []
     /**Check token requirement contract validity*/
     const tokenRequirements = input.tokenHolderRequirement?.tokenRequirement ?? []
     const contractPromises = tokenRequirements.map(tokenRequirement => {
@@ -89,10 +91,23 @@ export const perkRouter = createTRPCRouter({
       } else if (tokenRequirement.tokenType === 'NFT') {
         return getNftContractMetadata(network, tokenRequirement.contractAddress)
       }
+      return Promise.resolve()
     })
-    await Promise.all(contractPromises)
+    promises.push(...contractPromises)
+    /** Check wallet interaction contract and interaction validity*/
+    const walletInteraction =
+      input.walletInteraction?.map(interaction => ({
+        contractAddress: interaction.contract,
+        functionNames:
+          input.walletInteraction
+            ?.filter(interaction => interaction.contract === interaction.contract)
+            ?.map(interaction => interaction.interaction ?? '') ?? [],
+        blockchain: interaction.blockchain,
+      })) ?? []
+    const walletInteractionPromises = walletInteraction.map(verifyContractFunction)
+    promises.push(...walletInteractionPromises)
 
-    console.log(input.twitterRequirement)
+    await Promise.all(promises)
 
     const createAndUpdateData = {
       name: input.name,
@@ -113,6 +128,7 @@ export const perkRouter = createTRPCRouter({
       },
       tokenHolderRequirement: input.tokenHolderRequirement === undefined ? null : input.tokenHolderRequirement,
       twitterRequirement: input.twitterRequirement === undefined ? [] : input.twitterRequirement,
+      walletInteraction: input.walletInteraction === undefined ? [] : input.walletInteraction,
     }
 
     const dataForAws = {

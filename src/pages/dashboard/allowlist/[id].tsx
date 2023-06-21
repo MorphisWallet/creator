@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { type GetServerSideProps } from 'next'
-import { getSession } from 'next-auth/react'
 import { prisma } from '@/server/db'
 import { type Perk } from '@prisma/client'
 import { Box, Button, Card, Grid, Group, Text, Image, Stack, ActionIcon, List } from '@mantine/core'

@@ -294,6 +294,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
           <NumberInput
             label="Mint Price"
             hideControls
+            precision={2}
             placeholder={'0'}
             {...form.getInputProps('price')}
             disabled={isPublished}
@@ -315,7 +316,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
         <FeaturedImage />
         <TokenRequirement disabled={isPublished} />
         <TwitterRequirement disabled={isPublished} />
-        <WalletInteractionRequirement />
+        <WalletInteractionRequirement disabled={isPublished} />
         <Group>
           <Button
             onClick={() => {

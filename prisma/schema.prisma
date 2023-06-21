@@ -187,14 +187,14 @@ enum TwitterRequirementType {
 type WalletInteraction {
   blockchain            WalletInteractionBlockchain
   contract              String
-  intraction            String
+  interaction           String
   interactionCount      Int
   interactionPeriod     Int
   interactionPeriodType InteractionPeriodType
 }
 
 enum WalletInteractionBlockchain {
-  Etherum
+  Ethereum
   Polygon
 }
 

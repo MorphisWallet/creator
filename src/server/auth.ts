@@ -94,7 +94,7 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
           image: data.profile_image_url,
           twitter: {
             id: data.id,
-            name: data.username,
+            name: data.name,
             username: data.username,
             image: data.profile_image_url,
           },

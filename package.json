@@ -46,6 +46,7 @@
     "dayjs": "^1.11.8",
     "ethers": "^6.4.0",
     "install": "^0.13.0",
+    "lodash": "^4.17.21",
     "next": "^13.4.2",
     "next-auth": "4.22.1",
     "prettier": "^2.8.8",
@@ -62,6 +63,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.37.0",
+    "@types/lodash": "^4.14.195",
     "@types/node": "^18.16.0",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",

@@ -1,5 +1,14 @@
 import { z } from 'zod'
-import { PerkBlockchain, PerkType, TokenRequirementBlockChain, TokenType, PerkStatus, TwitterRequirementType } from '@prisma/client'
+import {
+  PerkBlockchain,
+  PerkType,
+  TokenRequirementBlockChain,
+  TokenType,
+  PerkStatus,
+  TwitterRequirementType,
+  WalletInteractionBlockchain,
+  InteractionPeriodType,
+} from '@prisma/client'
 
 export const twitterRequirementSchema = z.object({
   type: z.nativeEnum(TwitterRequirementType),
@@ -7,6 +16,15 @@ export const twitterRequirementSchema = z.object({
 })
 
 export type TwitterRequirementSchemaType = z.infer<typeof twitterRequirementSchema>
+
+export const walletInteractionRequirementSchema = z.object({
+  blockchain: z.nativeEnum(WalletInteractionBlockchain),
+  contract: z.string().nonempty(),
+  interaction: z.string().nonempty(),
+  interactionCount: z.number().min(0),
+  interactionPeriod: z.number().min(0),
+  interactionPeriodType: z.nativeEnum(InteractionPeriodType),
+})
 
 export const createNftAllowListPerkSchema = z.object({
   perkId: z.string().optional(),
@@ -40,4 +58,5 @@ export const createNftAllowListPerkSchema = z.object({
     })
     .optional(),
   twitterRequirement: z.array(twitterRequirementSchema).optional(),
+  walletInteraction: z.array(walletInteractionRequirementSchema).optional(),
 })

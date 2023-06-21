@@ -14,7 +14,7 @@ type TwitterRequirement = {
 
 type TwitterRequirementStore = {
   enableTwitterRequirement: boolean
-  setEnableTwitterRequirement: (enableTokenRequirement: boolean) => void
+  setEnableTwitterRequirement: (enableTwitterRequirement: boolean) => void
   twitterRequirement: TwitterRequirement[]
   setTwitterRequirement: (twitterRequirement: TwitterRequirement[]) => void
   resetTwitterRequirement: () => void
@@ -22,7 +22,7 @@ type TwitterRequirementStore = {
 
 export const useTwitterRequirementStore = create<TwitterRequirementStore>(set => ({
   enableTwitterRequirement: false,
-  setEnableTwitterRequirement: enableTokenRequirement => set({ enableTwitterRequirement: enableTokenRequirement }),
+  setEnableTwitterRequirement: enableTwitterRequirement => set({ enableTwitterRequirement: enableTwitterRequirement }),
   twitterRequirement: [
     {
       value: '',
