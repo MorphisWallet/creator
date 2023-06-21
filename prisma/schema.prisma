@@ -128,7 +128,7 @@ enum PerkStatus {
 type AllowList {
   spots       Int
   spotsUsed   Int?    @default(0)
-  price       Int?
+  price       Float?
   priceSymbol String?
   totalSupply Int?
 }
