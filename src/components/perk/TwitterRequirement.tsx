@@ -10,6 +10,7 @@ type Props = {
 type TwitterRequirement = {
   type: TwitterRequirementType | ''
   value: string
+  error?: string
 }
 
 type TwitterRequirementStore = {
@@ -32,6 +33,14 @@ export const useTwitterRequirementStore = create<TwitterRequirementStore>(set =>
   setTwitterRequirement: twitterRequirement => set({ twitterRequirement }),
   resetTwitterRequirement: () => set({ enableTwitterRequirement: false, twitterRequirement: [{ value: '', type: '' }] }),
 }))
+
+const isTweetValid = (link: string) => {
+  const tweetLinkRegex = /^https?:\/\/(?:www\.)?twitter\.com\/\w+\/status\/\d+$/i
+  return tweetLinkRegex.test(link)
+}
+const isTweetSpaceValid = (link: string) => {
+  return link.startsWith('https://twitter.com/i/spaces/')
+}
 
 export const TwitterRequirement = ({ disabled }: Props) => {
   const { enableTwitterRequirement, setEnableTwitterRequirement, twitterRequirement, setTwitterRequirement } = useTwitterRequirementStore()
@@ -95,11 +104,31 @@ export const TwitterRequirement = ({ disabled }: Props) => {
                     maw={500}
                     value={requirement.value}
                     disabled={requirement.type === 'Follow' || disabled}
+                    error={requirement.error}
                     onChange={event => {
+                      const value = event.target.value
                       setTwitterRequirement(
                         twitterRequirement.map((requirement, i) => {
                           if (i === index) {
-                            return { ...requirement, value: event.target.value }
+                            return { ...requirement, value }
+                          }
+                          return requirement
+                        })
+                      )
+                    }}
+                    onBlur={event => {
+                      const value = event.target.value
+                      let tweetValid = true
+                      if (requirement.type !== 'JoinSpace' && requirement.type !== 'Follow') {
+                        tweetValid = isTweetValid(value)
+                      } else if (requirement.type === 'JoinSpace') {
+                        tweetValid = isTweetSpaceValid(value)
+                      }
+                      const error = tweetValid ? undefined : 'Please enter a valid tweet link'
+                      setTwitterRequirement(
+                        twitterRequirement.map((requirement, i) => {
+                          if (i === index) {
+                            return { ...requirement, error }
                           }
                           return requirement
                         })

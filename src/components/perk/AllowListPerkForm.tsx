@@ -314,8 +314,8 @@ export const AllowListPerkForm = ({ perk }: Props) => {
           />
         </Group>
         <FeaturedImage />
-        <TokenRequirement disabled={isPublished} />
         <TwitterRequirement disabled={isPublished} />
+        <TokenRequirement disabled={isPublished} />
         <WalletInteractionRequirement disabled={isPublished} />
         <Group>
           <Button
