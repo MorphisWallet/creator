@@ -113,6 +113,7 @@ model Perk {
   userId                 String                  @db.ObjectId
   user                   User                    @relation(fields: [userId], references: [id])
   allowList              AllowList?
+  generic                Generic?
   tokenHolderRequirement TokenHolderRequirement?
   twitterRequirement     TwitterRequirement[]
   walletInteraction      WalletInteraction[]
@@ -131,6 +132,13 @@ type AllowList {
   price       Float?
   priceSymbol String?
   totalSupply Int?
+}
+
+type Generic {
+  spots     Int
+  spotsUsed Int?           @default(0)
+  link      String
+  type      GenricPerkType
 }
 
 type TokenHolderRequirement {
@@ -202,4 +210,13 @@ enum InteractionPeriodType {
   Day
   Month
   Year
+}
+
+enum GenricPerkType {
+  Airdrop
+  Allowlist
+  Quest
+  Discount
+  Merch
+  Other
 }
