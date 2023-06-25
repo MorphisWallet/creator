@@ -1,6 +1,5 @@
 import { type Perk } from '@prisma/client'
 import { type GetServerSideProps } from 'next'
-import { getSession } from 'next-auth/react'
 import { prisma } from '@/server/db'
 import Head from 'next/head'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'

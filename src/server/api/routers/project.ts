@@ -31,4 +31,17 @@ export const projectRouter = createTRPCRouter({
         message: 'Project Info Updated',
       }
     }),
+  getProjectDetail: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id
+    return await prisma.project.findUniqueOrThrow({
+      where: {
+        userId,
+      },
+      select: {
+        name: true,
+        description: true,
+        link: true,
+      },
+    })
+  }),
 })
