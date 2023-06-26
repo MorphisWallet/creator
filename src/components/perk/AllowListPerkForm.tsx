@@ -13,7 +13,6 @@ import { createNftAllowListPerkSchema, type TwitterRequirementSchemaType } from 
 import { type CreateNftAllowListPerkSchemaType, type TokenRequirementSchemaType } from '@/server/api/routers/perk'
 import { modals } from '@mantine/modals'
 import { TwitterRequirement, useTwitterRequirementStore } from '@/components/perk/TwitterRequirement'
-import { WalletInteractionRequirement } from '@/components/perk/WalletInteractionRequirement'
 import { PerkPreview } from '@/components/perk/PerkPreview'
 
 type Props = {
@@ -30,6 +29,7 @@ type FormValues = {
   price?: number
   priceSymbol?: string
   totalSupply?: number
+  featuredImageUrl: string
 }
 
 export const AllowListPerkForm = ({ perk }: Props) => {
@@ -46,6 +46,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
       price: perk?.allowList?.price ?? undefined,
       priceSymbol: perk?.allowList?.priceSymbol ?? undefined,
       totalSupply: perk?.allowList?.totalSupply ?? undefined,
+      featuredImageUrl: perk?.featuredImageUrl ?? '',
     },
     validate: {
       name: value => {
@@ -322,10 +323,13 @@ export const AllowListPerkForm = ({ perk }: Props) => {
                 disabled={isPublished}
               />
             </Group>
-            <FeaturedImage />
+            <FeaturedImage
+              initialImageUrl={form.values.featuredImageUrl}
+              onImageUrlChange={url => form.setFieldValue('featuredImageUrl', url)}
+              disabled={isPublished}
+            />
             <TwitterRequirement disabled={isPublished} />
             <TokenRequirement disabled={isPublished} />
-            <WalletInteractionRequirement disabled={isPublished} />
             <Group>
               <Button
                 onClick={() => {
@@ -362,7 +366,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
           endDate={form.values.endDate}
           startDate={form.values.startDate}
           spotsAvailable={form.values.spot}
-          perkImage={''}
+          perkImage={form.values.featuredImageUrl}
         />
       </Card>
     </Group>

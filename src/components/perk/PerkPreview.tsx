@@ -34,7 +34,7 @@ export const PerkPreview = ({ perkName, perkDescription, perkImage, spotsAvailab
           src={perkImage}
           withPlaceholder
           radius="md"
-          alt={'featured image'}
+          alt={''}
           sx={{ flexShrink: 0 }}
         />
         <Stack spacing={'xs'}>

@@ -32,6 +32,7 @@ export const createNftAllowListPerkSchema = z.object({
   description: z.string().max(1000),
   blockchain: z.nativeEnum(PerkBlockchain),
   perkType: z.nativeEnum(PerkType),
+  featuredImageUrl: z.string(),
   spot: z.number(),
   startDate: z.date(),
   endDate: z.date(),

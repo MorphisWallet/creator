@@ -119,6 +119,7 @@ export const perkRouter = createTRPCRouter({
       status: input.status,
       startDate: input.startDate,
       endDate: input.endDate,
+      featuredImageUrl: input.featuredImageUrl,
       allowList: {
         spots: input.spot,
         spotsUsed: 0,
@@ -134,7 +135,7 @@ export const perkRouter = createTRPCRouter({
     const dataForAws = {
       name: input.name,
       description: input.description,
-      featureImage: '',
+      featureImage: input.featuredImageUrl,
       contractAddress: '',
       activeDate: input.startDate.toISOString(),
       expireDate: input.endDate.toISOString(),

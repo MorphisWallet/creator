@@ -1,17 +1,22 @@
 import { useState } from 'react'
 import { Dropzone, type DropzoneProps, type FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
-import { ActionIcon, Box, Group, Image, rem, Text } from '@mantine/core'
+import { ActionIcon, Box, Group, Image, LoadingOverlay, rem, Text } from '@mantine/core'
 import { IconPhoto, IconUpload, IconX } from '@tabler/icons-react'
 import { notifications } from '@mantine/notifications'
 import { api } from '@/utils/api'
 
 type Props = {
-  onSuccessUpload?: (url: string) => void
+  onImageUrlChange: (url: string) => void
+  initialImageUrl: string
+  disabled?: boolean
 }
 
-export const FeaturedImage = ({ onSuccessUpload }: Props) => {
+export const FeaturedImage = ({ onImageUrlChange, initialImageUrl, disabled }: Props) => {
   const [files, setFiles] = useState<FileWithPath[]>([])
-  const clearFiles = () => setFiles([])
+  const clearFiles = () => {
+    setFiles([])
+    onImageUrlChange('')
+  }
   const [isUploading, setIsUploading] = useState(false)
 
   const { mutate, isLoading } = api.upload.getUploadUrl.useMutation({
@@ -27,7 +32,7 @@ export const FeaturedImage = ({ onSuccessUpload }: Props) => {
         })
 
         if (upload.ok) {
-          onSuccessUpload?.(imageUrl)
+          onImageUrlChange(imageUrl)
         } else {
           notifications.show({
             title: 'Error',
@@ -42,6 +47,7 @@ export const FeaturedImage = ({ onSuccessUpload }: Props) => {
           message: 'Failed to upload image',
           color: 'red',
         })
+        setIsUploading(false)
       }
     },
   })
@@ -57,24 +63,34 @@ export const FeaturedImage = ({ onSuccessUpload }: Props) => {
     mutate({ extension })
   }
 
-  if (files.length >= 1 && files[0]) {
-    const imageUrl = URL.createObjectURL(files[0])
+  if ((files.length >= 1 && files[0]) || initialImageUrl) {
+    let imageUrl = initialImageUrl
+    if (files.length >= 1 && files[0]) {
+      imageUrl = URL.createObjectURL(files[0])
+    }
+
     return (
       <Box>
         <p>Featured image</p>
         <Box sx={{ position: 'relative' }}>
+          <LoadingOverlay
+            visible={loading}
+            overlayBlur={2}
+          />
           <Image
             src={imageUrl}
             fit={'cover'}
             height={420}
             alt={'Perk Feature Image'}
           />
-          <ActionIcon
-            sx={{ position: 'absolute', right: '1rem', top: '1rem' }}
-            onClick={clearFiles}
-          >
-            <IconX />
-          </ActionIcon>
+          {!disabled && (
+            <ActionIcon
+              sx={{ position: 'absolute', right: '1rem', top: '1rem' }}
+              onClick={clearFiles}
+            >
+              <IconX />
+            </ActionIcon>
+          )}
         </Box>
       </Box>
     )
@@ -85,7 +101,7 @@ export const FeaturedImage = ({ onSuccessUpload }: Props) => {
       <Text
         fw={500}
         size="sm"
-        mb={2}
+        mb={4}
       >
         Featured image
       </Text>
@@ -101,12 +117,15 @@ export const FeaturedImage = ({ onSuccessUpload }: Props) => {
         maxSize={3 * 1024 ** 2}
         accept={IMAGE_MIME_TYPE}
         maxFiles={1}
-        loading={loading}
+        sx={{
+          borderStyle: 'solid',
+          borderWidth: '1px',
+        }}
       >
         <Group
           position="center"
           spacing="xl"
-          style={{ minHeight: rem(220), pointerEvents: 'none' }}
+          style={{ minHeight: rem(420), pointerEvents: 'none' }}
         >
           <Dropzone.Accept>
             <IconUpload
