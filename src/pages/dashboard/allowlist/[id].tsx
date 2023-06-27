@@ -131,10 +131,12 @@ export default function AllowListDetailPage({ perk }: Props) {
     csvExporter.generateCsv(csvData)
   }
 
+  const pageTitle = `Airdawg - ${perk.name}`
+
   return (
     <DashboardLayout>
       <Head>
-        <title>Airdawg - {perk.name}</title>
+        <title>{pageTitle}</title>
       </Head>
       <Box>
         <Group>
