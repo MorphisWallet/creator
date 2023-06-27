@@ -8,6 +8,10 @@ import { PerkStatusBadge } from '@/components/perk/PerkStatusBadge'
 import { formatDate } from '@/utils/date'
 import { IconArrowLeft } from '@tabler/icons-react'
 import { useRouter } from 'next/router'
+import { ExportToCsv } from 'export-to-csv'
+import { api } from '@/utils/api'
+import { useDidUpdate } from '@mantine/hooks'
+import { notifications } from '@mantine/notifications'
 
 type Props = {
   perk: Perk
@@ -86,6 +90,47 @@ export default function AllowListDetailPage({ perk }: Props) {
 
   const router = useRouter()
 
+  const { isLoading, data, error } = api.perk.downloadAllowList.useQuery(perk.id, {
+    refetchInterval: 1000 * 60 * 5, // refetch every 5 minute
+    retry: false,
+  })
+
+  useDidUpdate(() => {
+    if (error) {
+      notifications.show({
+        title: 'Error',
+        color: 'red',
+        message: error.message,
+      })
+    }
+  }, [error])
+
+  const downloadAllowlist = () => {
+    const options = {
+      fieldSeparator: ',',
+      quoteStrings: '"',
+      showLabels: true,
+      useTextFile: false,
+      useBom: true,
+      useKeysAsHeaders: true,
+      filename: 'allowlist',
+    }
+
+    const csvExporter = new ExportToCsv(options)
+
+    let csvData = [
+      {
+        walletAddress: '',
+        twitterName: '',
+      },
+    ]
+
+    if (data && data.length > 0) {
+      csvData = data
+    }
+    csvExporter.generateCsv(csvData)
+  }
+
   return (
     <DashboardLayout>
       <Head>
@@ -115,6 +160,8 @@ export default function AllowListDetailPage({ perk }: Props) {
             <Button
               variant={'outline'}
               color={'orange'}
+              onClick={downloadAllowlist}
+              loading={isLoading}
             >
               Download Allowlist
             </Button>

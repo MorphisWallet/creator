@@ -89,6 +89,9 @@ dependencies:
   ethers:
     specifier: ^6.4.0
     version: 6.4.0
+  export-to-csv:
+    specifier: ^0.2.1
+    version: 0.2.1
   install:
     specifier: ^0.13.0
     version: 0.13.0
@@ -4900,6 +4903,10 @@ packages:
       signal-exit: 3.0.7
       strip-final-newline: 3.0.0
     dev: true
+
+  /export-to-csv@0.2.1:
+    resolution: {integrity: sha512-KTbrd3CAZ0cFceJEZr1e5uiMasabeCpXq1/5uvVxDl53o4jXJHnltasQoj2NkzrxD8hU9kdwjnMhoir/7nNx/A==}
+    dev: false
 
   /ext@1.7.0:
     resolution: {integrity: sha512-6hxeJYaL110a9b5TEJSj0gojyHQAmA2ch5Os+ySCiA1QGdS697XWY1pzsrSjqA9LDEEgdB/KypIlR59RcLuHYw==}

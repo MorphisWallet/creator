@@ -117,6 +117,7 @@ model Perk {
   tokenHolderRequirement TokenHolderRequirement?
   twitterRequirement     TwitterRequirement[]
   walletInteraction      WalletInteraction[]
+  Claimed                Claimed[]
 
   @@map("creator_perk")
 }
@@ -219,4 +220,16 @@ enum GenricPerkType {
   Discount
   Merch
   Other
+}
+
+model Claimed {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  walletAddress String
+  twitterName   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  perkId        String   @db.ObjectId
+  perk          Perk     @relation(fields: [perkId], references: [id])
+
+  @@map("creator_claimed")
 }

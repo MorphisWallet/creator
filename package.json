@@ -45,6 +45,7 @@
     "babel-plugin-superjson-next": "^0.4.5",
     "dayjs": "^1.11.8",
     "ethers": "^6.4.0",
+    "export-to-csv": "^0.2.1",
     "install": "^0.13.0",
     "lodash": "^4.17.21",
     "next": "^13.4.2",

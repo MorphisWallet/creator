@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 import { prisma } from '@/server/db'
-import { TokenType, TokenRequirementBlockChain, type Prisma, PerkStatus } from '@prisma/client'
+import { PerkStatus, type Prisma, TokenRequirementBlockChain, TokenType } from '@prisma/client'
 import { createPerkOnAWSService, getNftContractMetadata, getTokenMetadata } from '@/libs'
 import { convertTokenRequirementNetworkToAlchemyNetwork } from '@/components/perk/TokenRequirement'
 import { createNftAllowListPerkSchema } from '@/schemas'
@@ -191,5 +191,24 @@ export const perkRouter = createTRPCRouter({
         message: 'Perk Published',
       }
     }
+  }),
+  downloadAllowList: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
+    const { user } = ctx.session
+    /** Make sure user owns this perk*/
+    await prisma.perk.findFirstOrThrow({
+      where: {
+        id: input,
+        userId: user.id,
+      },
+    })
+    return await prisma.claimed.findMany({
+      where: {
+        perkId: input,
+      },
+      select: {
+        walletAddress: true,
+        twitterName: true,
+      },
+    })
   }),
 })
