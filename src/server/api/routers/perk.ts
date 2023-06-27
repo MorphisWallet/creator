@@ -152,6 +152,7 @@ export const perkRouter = createTRPCRouter({
       const perk = await prisma.perk.findFirstOrThrow({
         where: {
           id: input.perkId,
+          userId: user.id,
         },
       })
       /** Published Perk can only update the following field*/
