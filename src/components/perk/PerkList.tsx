@@ -61,9 +61,7 @@ type PerkStatusFilter = 'published' | 'draft' | 'expired' | 'all'
 
 export const PerkList = () => {
   const [status, setStatus] = useState('all')
-  const { data, isLoading } = api.perk.list.useQuery({
-    status: status as PerkStatusFilter,
-  })
+  const { data, isLoading } = api.perk.list.useQuery()
 
   const filterOptions: { label: string; value: PerkStatusFilter }[] = [
     { label: '🔥 All', value: 'all' },
@@ -72,11 +70,28 @@ export const PerkList = () => {
     { label: '📦 Expired', value: 'expired' },
   ]
 
+  const filteredPerks =
+    data?.perks.filter(perk => {
+      if (status === 'all') {
+        return true
+      }
+      if (status === 'draft') {
+        return perk.status === 'Draft'
+      }
+      if (status === 'published') {
+        return perk.endDate > new Date() && perk.status === 'Published'
+      }
+      if (status === 'expired') {
+        return perk.endDate < new Date()
+      }
+      return false
+    }) ?? []
+
   const router = useRouter()
 
   const perks = (
     <Grid>
-      {data?.perks.map(perk => {
+      {filteredPerks.map(perk => {
         return (
           <Grid.Col
             key={perk.id}

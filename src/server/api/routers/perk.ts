@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 import { prisma } from '@/server/db'
-import { PerkStatus, type Prisma, TokenRequirementBlockChain, TokenType } from '@prisma/client'
+import { PerkStatus, TokenRequirementBlockChain, TokenType } from '@prisma/client'
 import { createPerkOnAWSService, getNftContractMetadata, getTokenMetadata } from '@/libs'
 import { convertTokenRequirementNetworkToAlchemyNetwork } from '@/components/perk/TokenRequirement'
 import { createNftAllowListPerkSchema } from '@/schemas'
@@ -24,44 +24,24 @@ export type CreateNftAllowListPerkSchemaType = z.infer<typeof createNftAllowList
 export type DisplayStatus = 'published' | 'draft' | 'expired'
 
 export const perkRouter = createTRPCRouter({
-  list: protectedProcedure
-    .input(
-      z.object({
-        status: z.enum(['published', 'draft', 'expired', 'all']),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { user } = ctx.session
-      const { status } = input
-      const filter: Prisma.PerkWhereInput = {
+  list: protectedProcedure.query(async ({ ctx }) => {
+    const { user } = ctx.session
+
+    const perks = await prisma.perk.findMany({
+      where: {
         userId: user.id,
-      }
-      if (status === 'published') {
-        filter.status = PerkStatus.Published
-        filter.endDate = {
-          gt: new Date(),
-        }
-      } else if (status === 'draft') {
-        filter.status = PerkStatus.Draft
-      } else if (status === 'expired') {
-        filter.endDate = {
-          lte: new Date(),
-        }
-      }
+      },
+      orderBy: [
+        {
+          createdAt: 'desc',
+        },
+      ],
+    })
 
-      const perks = await prisma.perk.findMany({
-        where: filter,
-        orderBy: [
-          {
-            createdAt: 'desc',
-          },
-        ],
-      })
-
-      return {
-        perks,
-      }
-    }),
+    return {
+      perks,
+    }
+  }),
   createAllowListPerk: protectedProcedure.input(createNftAllowListPerkSchema).mutation(async ({ input, ctx }) => {
     const { user } = ctx.session
     const project = await prisma.project.findUniqueOrThrow({
