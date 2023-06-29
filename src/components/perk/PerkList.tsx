@@ -1,9 +1,61 @@
-import { Box, Card, Grid, Group, Image, Loader, SegmentedControl, Text } from '@mantine/core'
+import { Box, Button, Card, Center, Grid, Group, Image, Loader, SegmentedControl, Text } from '@mantine/core'
 import { api } from '@/utils/api'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { PerkStatusBadge } from '@/components/perk/PerkStatusBadge'
 import { formatDate } from '@/utils/date'
+
+const EmptyPerkMessage = () => {
+  const { push } = useRouter()
+
+  return (
+    <Card
+      withBorder
+      radius={'lg'}
+      padding={'xl'}
+    >
+      <Center>
+        <Box
+          maw={600}
+          py={40}
+        >
+          <Text
+            fw={'bold'}
+            size="xl"
+            align={'center'}
+            mb={'md'}
+          >
+            You don’t have perks
+          </Text>
+          <Text
+            color={'dimmed'}
+            align={'center'}
+            mb={'md'}
+          >
+            Perks are things you want to offer to your community holders to engage, reward or simply thank them for being part of your
+            growing community.
+          </Text>
+          <Group
+            position={'center'}
+            sx={{ fontSize: 53 }}
+            mb={'md'}
+          >
+            <Text>🐶</Text>
+            <Text>✨</Text>
+          </Group>
+          <Button
+            fullWidth
+            variant="outline"
+            radius="xl"
+            onClick={() => void push('/dashboard/template')}
+          >
+            Start creating
+          </Button>
+        </Box>
+      </Center>
+    </Card>
+  )
+}
 
 type PerkStatusFilter = 'published' | 'draft' | 'expired' | 'all'
 
@@ -132,6 +184,7 @@ export const PerkList = () => {
           <Loader size="md" />
         </Box>
       )}
+      {data?.perks?.length === 0 && <EmptyPerkMessage />}
       {data && perks}
     </Box>
   )
