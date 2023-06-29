@@ -2,11 +2,10 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { type GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
 import { prisma } from '@/server/db'
-import { Alert, Box, Button, Stack, Space } from '@mantine/core'
-import { IconAlertCircle } from '@tabler/icons-react'
+import { Box, Stack } from '@mantine/core'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { PerkList } from '@/components/perk/PerkList'
+import { WarningMessage } from '@/components/common/WarningMessage'
 
 type Props = {
   hasVerifiedTwitter: boolean
@@ -40,20 +39,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   }
 }
 
-const VerificationAlert = ({ message }: { message: string }) => {
-  return (
-    <Alert
-      icon={<IconAlertCircle size="1rem" />}
-      color="orange"
-    >
-      {message}
-    </Alert>
-  )
-}
-
 export default function Perks({ hasVerifiedTwitter, hasCreatedProject }: Props) {
-  const { push } = useRouter()
-
   return (
     <DashboardLayout>
       <Head>
@@ -63,14 +49,10 @@ export default function Perks({ hasVerifiedTwitter, hasCreatedProject }: Props) 
       <Box>
         <Stack>
           {!hasVerifiedTwitter && (
-            <VerificationAlert message={'You have not verified your Twitter account yet. Please verify your Twitter to create perks.'} />
+            <WarningMessage message={'You have not verified your Twitter account yet. Please verify your Twitter to create perks.'} />
           )}
-          {!hasCreatedProject && <VerificationAlert message="Please Fill in project information first" />}
+          {!hasCreatedProject && <WarningMessage message="Please Fill in project information first" />}
         </Stack>
-        {hasVerifiedTwitter && hasCreatedProject && (
-          <Button onClick={() => void push('/dashboard/allowlist/create')}>Create New Allowlist</Button>
-        )}
-        <Space h={'md'} />
         {hasVerifiedTwitter && hasCreatedProject && <PerkList />}
       </Box>
     </DashboardLayout>

@@ -10,7 +10,7 @@ dayjs.extend(utc)
 
 export default function CreateAllowlist() {
   const { push } = useRouter()
-  const goBack = () => push('/dashboard/perks')
+  const goBack = () => push('/dashboard/template')
 
   return (
     <DashboardLayout>
