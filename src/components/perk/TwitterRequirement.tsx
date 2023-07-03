@@ -89,9 +89,9 @@ export const TwitterRequirement = ({ disabled }: Props) => {
           onChange={() => setEnableTwitterRequirement(!enableTwitterRequirement)}
         />
       </Group>
-      <Stack>
-        {enableTwitterRequirement &&
-          twitterRequirement.map((requirement, index) => {
+      {enableTwitterRequirement && (
+        <Stack>
+          {twitterRequirement.map((requirement, index) => {
             return (
               <Box key={index}>
                 <Text>Must...</Text>
@@ -163,7 +163,8 @@ export const TwitterRequirement = ({ disabled }: Props) => {
               </Box>
             )
           })}
-      </Stack>
+        </Stack>
+      )}
       {enableTwitterRequirement && !disabled && (
         <Button
           variant="white"

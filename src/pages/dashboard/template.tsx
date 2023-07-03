@@ -115,6 +115,7 @@ export default function Template({ hasVerifiedTwitter, hasCreatedProject }: Prop
                   fullWidth
                   variant="outline"
                   radius="xl"
+                  onClick={() => void push('/dashboard/generic/create')}
                 >
                   Start creating
                 </Button>

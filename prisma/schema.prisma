@@ -136,10 +136,8 @@ type AllowList {
 }
 
 type Generic {
-  spots     Int
-  spotsUsed Int?           @default(0)
-  link      String
-  type      GenricPerkType
+  link String
+  type GenericPerkType
 }
 
 type TokenHolderRequirement {
@@ -164,7 +162,7 @@ enum TokenType {
 
 enum PerkType {
   Allowlist
-  Manual
+  Generic
 }
 
 enum PerkBlockchain {
@@ -213,7 +211,7 @@ enum InteractionPeriodType {
   Year
 }
 
-enum GenricPerkType {
+enum GenericPerkType {
   Airdrop
   Allowlist
   Quest

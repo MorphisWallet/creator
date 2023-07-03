@@ -1,9 +1,10 @@
-import { Box, Button, Card, Center, Grid, Group, Image, Loader, SegmentedControl, Text } from '@mantine/core'
+import { Box, Button, Card, Center, Group, Image, Loader, SegmentedControl, SimpleGrid, Space, Stack, Text } from '@mantine/core'
 import { api } from '@/utils/api'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { PerkStatusBadge } from '@/components/perk/PerkStatusBadge'
 import { formatDate } from '@/utils/date'
+import { type Perk } from '@prisma/client'
 
 const EmptyPerkMessage = () => {
   const { push } = useRouter()
@@ -57,6 +58,51 @@ const EmptyPerkMessage = () => {
   )
 }
 
+const PerkDescription = ({ label, value }: { label: string; value: string }) => {
+  return (
+    <Group position={'apart'}>
+      <Text
+        c="dimmed"
+        size={'sm'}
+      >
+        {label}
+      </Text>
+      <Text
+        c="dimmed"
+        size={'sm'}
+      >
+        {value}
+      </Text>
+    </Group>
+  )
+}
+
+const AllowlistPerkDescription = ({ perk }: { perk: Perk }) => {
+  return (
+    <>
+      <PerkDescription
+        label={'Spots available'}
+        value={`${perk.allowList?.spotsUsed ?? 0} / ${perk.allowList?.spots ?? 0}`}
+      />
+      <PerkDescription
+        label={'Price'}
+        value={`${perk?.allowList?.price ?? ''} ${perk.allowList?.priceSymbol ?? ''}`}
+      />
+    </>
+  )
+}
+
+const GenericPerkDescription = ({ perk }: { perk: Perk }) => {
+  return (
+    <>
+      <PerkDescription
+        label={'Type'}
+        value={perk.generic?.type ?? ''}
+      />
+    </>
+  )
+}
+
 type PerkStatusFilter = 'published' | 'draft' | 'expired' | 'all'
 
 export const PerkList = () => {
@@ -90,100 +136,68 @@ export const PerkList = () => {
   const router = useRouter()
 
   const perks = (
-    <Grid>
+    <SimpleGrid
+      cols={4}
+      spacing="lg"
+      breakpoints={[
+        { maxWidth: 'xl', cols: 2, spacing: 'sm' },
+        { maxWidth: 'xs', cols: 1, spacing: 'sm' },
+      ]}
+    >
       {filteredPerks.map(perk => {
         return (
-          <Grid.Col
+          <Card
             key={perk.id}
-            md={6}
-            lg={3}
+            shadow="sm"
+            padding="lg"
+            radius="md"
+            withBorder
+            sx={{ cursor: 'pointer', alignSelf: 'stretch' }}
+            onClick={() => {
+              const type = perk.type.toLowerCase()
+              if (perk.status === 'Draft') {
+                void router.push(`/dashboard/${type}/edit/${perk.id}`)
+              } else {
+                void router.push(`/dashboard/${type}/${perk.id}`)
+              }
+            }}
           >
-            <Card
-              shadow="sm"
-              padding="lg"
-              radius="md"
-              withBorder
-              sx={{ cursor: 'pointer' }}
-              onClick={() => {
-                if (perk.status === 'Draft') {
-                  void router.push(`/dashboard/allowlist/edit/${perk.id}`)
-                } else {
-                  void router.push(`/dashboard/allowlist/${perk.id}`)
-                }
-              }}
-            >
-              <Card.Section>
-                <Image
-                  src={perk.featuredImageUrl}
-                  height={270}
-                  withPlaceholder
-                  alt="perk image"
-                />
-              </Card.Section>
-              <Text
-                weight={500}
-                lineClamp={1}
-                display={'block'}
-                truncate
-                size={'xl'}
-                mt={'xs'}
-              >
-                {perk.name}
-              </Text>
-              <Group position={'apart'}>
-                <Text
-                  c="dimmed"
-                  size={'sm'}
-                >
-                  Spots available
-                </Text>
-                <Text
-                  c="dimmed"
-                  size={'sm'}
-                >
-                  {perk.allowList?.spotsUsed} / {perk.allowList?.spots ?? 0}
-                </Text>
-              </Group>
-              <Group position={'apart'}>
-                <Text
-                  c="dimmed"
-                  size={'sm'}
-                >
-                  Price
-                </Text>
-                <Text
-                  c="dimmed"
-                  size={'sm'}
-                >
-                  {perk.allowList?.price} {perk.allowList?.priceSymbol}
-                </Text>
-              </Group>
-              <Group
-                position={'apart'}
-                mb={'md'}
-              >
-                <Text
-                  c="dimmed"
-                  size={'sm'}
-                >
-                  Date
-                </Text>
-                <Text
-                  c="dimmed"
-                  size={'sm'}
-                >
-                  {formatDate(perk.startDate)} - {formatDate(perk.endDate)}
-                </Text>
-              </Group>
-              <PerkStatusBadge
-                status={perk.status}
-                endDate={perk.endDate}
+            <Card.Section>
+              <Image
+                src={perk.featuredImageUrl}
+                height={270}
+                withPlaceholder
+                alt="perk image"
               />
-            </Card>
-          </Grid.Col>
+            </Card.Section>
+            <Space h={'md'} />
+            <PerkStatusBadge
+              status={perk.status}
+              endDate={perk.endDate}
+            />
+            <Text
+              weight={500}
+              lineClamp={1}
+              display={'block'}
+              truncate
+              size={'xl'}
+              mt={'xs'}
+            >
+              {perk.name}
+            </Text>
+            <Space h={'md'} />
+            <Stack spacing={'xs'}>
+              {perk.type === 'Allowlist' && <AllowlistPerkDescription perk={perk} />}
+              {perk.type === 'Generic' && <GenericPerkDescription perk={perk} />}
+              <PerkDescription
+                label={'Date'}
+                value={`${formatDate(perk.startDate)} - ${formatDate(perk.endDate)}`}
+              />
+            </Stack>
+          </Card>
         )
       })}
-    </Grid>
+    </SimpleGrid>
   )
 
   return (

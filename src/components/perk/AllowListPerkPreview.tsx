@@ -135,7 +135,7 @@ const TokenHolderRequirementPreview = () => {
   )
 }
 
-export const PerkPreview = ({ perkName, perkDescription, perkImage, spotsAvailable, endDate, startDate }: Props) => {
+export const AllowListPerkPreview = ({ perkName, perkDescription, perkImage, spotsAvailable, endDate, startDate }: Props) => {
   const { data } = api.project.getProjectDetail.useQuery()
 
   return (
@@ -145,7 +145,7 @@ export const PerkPreview = ({ perkName, perkDescription, perkImage, spotsAvailab
         fw={'bold'}
         mb={'xl'}
       >
-        Preview of your allowlist 👀
+        Preview of your perk 👀
       </Text>
       <Group
         noWrap

@@ -120,7 +120,9 @@ export const FeaturedImage = ({ onImageUrlChange, initialImageUrl, disabled }: P
         sx={{
           borderStyle: 'solid',
           borderWidth: '1px',
+          cursor: disabled ? 'not-allowed' : 'pointer',
         }}
+        disabled={disabled}
       >
         <Group
           position="center"
@@ -145,14 +147,16 @@ export const FeaturedImage = ({ onImageUrlChange, initialImageUrl, disabled }: P
               stroke={1.5}
             />
           </Dropzone.Idle>
-          <div>
-            <Text
-              size="xl"
-              inline
-            >
-              1400x420 recommended
-            </Text>
-          </div>
+          {!disabled && (
+            <div>
+              <Text
+                size="xl"
+                inline
+              >
+                1400x420 recommended
+              </Text>
+            </div>
+          )}
         </Group>
       </Dropzone>
     </Box>

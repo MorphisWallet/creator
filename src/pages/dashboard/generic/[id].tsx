@@ -3,15 +3,11 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { type GetServerSideProps } from 'next'
 import { prisma } from '@/server/db'
 import { type Perk } from '@prisma/client'
-import { Box, Button, Card, Grid, Group, Text, Image, Stack, ActionIcon } from '@mantine/core'
+import { Box, Button, Card, Grid, Group, Text, Image, Stack, ActionIcon, Anchor } from '@mantine/core'
 import { PerkStatusBadge } from '@/components/perk/PerkStatusBadge'
 import { formatDate } from '@/utils/date'
 import { IconArrowLeft } from '@tabler/icons-react'
 import { useRouter } from 'next/router'
-import { ExportToCsv } from 'export-to-csv'
-import { api } from '@/utils/api'
-import { useDidUpdate } from '@mantine/hooks'
-import { notifications } from '@mantine/notifications'
 import { TwitterRequirementDetail } from '@/components/perk/TwitterRequirementDetail'
 import { TokenRequirementDetail } from '@/components/perk/TokenRequirementDetail'
 
@@ -70,54 +66,10 @@ const StatCard = ({ title, content }: { title: string; content: string }) => (
   </Card>
 )
 
-export default function AllowListDetailPage({ perk }: Props) {
-  const spotUsed = perk.allowList?.spotsUsed ?? 0
-  const spotTotal = perk.allowList?.spots ?? 0
+export default function GenericPerkDetailPage({ perk }: Props) {
   const starDateString = formatDate(perk.startDate)
   const endDateString = formatDate(perk.endDate)
   const router = useRouter()
-
-  const { isLoading, data, error } = api.perk.downloadAllowList.useQuery(perk.id, {
-    refetchInterval: 1000 * 60 * 5, // refetch every 5 minute
-    retry: false,
-  })
-
-  useDidUpdate(() => {
-    if (error) {
-      notifications.show({
-        title: 'Error',
-        color: 'red',
-        message: error.message,
-      })
-    }
-  }, [error])
-
-  const downloadAllowlist = () => {
-    const options = {
-      fieldSeparator: ',',
-      quoteStrings: '"',
-      showLabels: true,
-      useTextFile: false,
-      useBom: true,
-      useKeysAsHeaders: true,
-      filename: 'allowlist',
-    }
-
-    const csvExporter = new ExportToCsv(options)
-
-    let csvData = [
-      {
-        walletAddress: '',
-        twitterName: '',
-      },
-    ]
-
-    if (data && data.length > 0) {
-      csvData = data
-    }
-    csvExporter.generateCsv(csvData)
-  }
-
   const pageTitle = `Airdawg - ${perk.name}`
 
   return (
@@ -134,7 +86,7 @@ export default function AllowListDetailPage({ perk }: Props) {
           >
             <IconArrowLeft size="1rem" />
           </ActionIcon>
-          <Text size="xl">{perk.name} allowlist</Text>
+          <Text size="xl">{perk.name}</Text>
           <PerkStatusBadge
             status={perk.status}
             endDate={perk.endDate}
@@ -144,20 +96,12 @@ export default function AllowListDetailPage({ perk }: Props) {
           position={'apart'}
           mt={'lg'}
         >
-          <Text size={'lg'}>Manage allowlist</Text>
+          <Text size={'lg'}>Manage perk</Text>
           <Group>
             <Button
               variant={'outline'}
-              color={'orange'}
-              onClick={downloadAllowlist}
-              loading={isLoading}
-            >
-              Download Allowlist
-            </Button>
-            <Button
-              variant={'outline'}
               color={'dark'}
-              onClick={() => void router.push(`/dashboard/allowlist/edit/${perk.id}`)}
+              onClick={() => void router.push(`/dashboard/generic/edit/${perk.id}`)}
             >
               Edit Requirement
             </Button>
@@ -166,8 +110,8 @@ export default function AllowListDetailPage({ perk }: Props) {
         <Grid mt={'md'}>
           <Grid.Col span={6}>
             <StatCard
-              title={'Number of participants'}
-              content={`${spotUsed}/${spotTotal} spots filled`}
+              title={'Perk Type'}
+              content={perk.generic?.type ?? ''}
             />
           </Grid.Col>
           <Grid.Col span={6}>
@@ -191,12 +135,15 @@ export default function AllowListDetailPage({ perk }: Props) {
         >
           {perk.description}
         </Text>
-        <Stack mt={'md'}>
-          <Text color={'dimmed'}>
-            Price: {perk.allowList?.price ?? 'N/A'} {perk.allowList?.priceSymbol}
-          </Text>
-          <Text color={'dimmed'}>Total Supply: {perk.allowList?.totalSupply ?? 'N/A'}</Text>
-        </Stack>
+        <Group spacing={8}>
+          <Text size={'lg'}>Link to claim:</Text>
+          <Anchor
+            href={perk.generic?.link}
+            target="_blank"
+          >
+            {perk.generic?.link}
+          </Anchor>
+        </Group>
         <Text
           mt={'xl'}
           size={'xl'}

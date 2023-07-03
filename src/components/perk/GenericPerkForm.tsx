@@ -1,5 +1,5 @@
-import { type Perk, PerkBlockchain, PerkStatus, PerkType } from '@prisma/client'
-import { Button, Card, Group, NumberInput, Select, Stack, Textarea, TextInput, Text, Box } from '@mantine/core'
+import { type Perk, PerkBlockchain, PerkStatus, PerkType, GenericPerkType } from '@prisma/client'
+import { Button, Card, Group, Select, Stack, Textarea, TextInput, Text, Box, Chip } from '@mantine/core'
 import { DateTimePicker } from '@mantine/dates'
 import { FeaturedImage } from '@/components/perk/FeaturedImage'
 import { TokenRequirement, useTokenRequirementStore } from '@/components/perk/TokenRequirement'
@@ -9,11 +9,12 @@ import { api } from '@/utils/api'
 import { notifications } from '@mantine/notifications'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import { createNftAllowListPerkSchema, type CreateNftAllowListPerkSchemaType, type TwitterRequirementSchemaType } from '@/schemas'
+import { createGenericPerkSchema, type CreateGenericPerkSchemaType, type TwitterRequirementSchemaType } from '@/schemas'
 import { type TokenRequirementSchemaType } from '@/server/api/routers/perk'
 import { modals } from '@mantine/modals'
 import { TwitterRequirement, useTwitterRequirementStore } from '@/components/perk/TwitterRequirement'
-import { AllowListPerkPreview } from '@/components/perk/AllowListPerkPreview'
+import { z } from 'zod'
+import { GenericPerkPreview } from '@/components/perk/GenericPerkPreview'
 
 type Props = {
   perk?: Perk
@@ -23,16 +24,14 @@ type FormValues = {
   name: string
   description: string
   blockchain: PerkBlockchain
-  spot: number
+  linkToClaim: string
+  genericPerkType: GenericPerkType | ''
   startDate?: Date
   endDate?: Date
-  price?: number
-  priceSymbol?: string
-  totalSupply?: number
   featuredImageUrl: string
 }
 
-export const AllowListPerkForm = ({ perk }: Props) => {
+export const GenericPerkForm = ({ perk }: Props) => {
   const isPublished = perk?.status === 'Published'
   const perkBlockchains = Object.values(PerkBlockchain)
   const form = useForm<FormValues>({
@@ -40,13 +39,11 @@ export const AllowListPerkForm = ({ perk }: Props) => {
       name: perk?.name ?? '',
       description: perk?.description ?? '',
       blockchain: perk?.blockchain ?? 'Ethereum',
-      spot: perk?.allowList?.spots ?? 0,
       startDate: perk?.startDate,
       endDate: perk?.endDate,
-      price: perk?.allowList?.price ?? undefined,
-      priceSymbol: perk?.allowList?.priceSymbol ?? undefined,
-      totalSupply: perk?.allowList?.totalSupply ?? undefined,
       featuredImageUrl: perk?.featuredImageUrl ?? '',
+      linkToClaim: perk?.generic?.link ?? '',
+      genericPerkType: perk?.generic?.type ?? '',
     },
     validate: {
       name: value => {
@@ -67,7 +64,6 @@ export const AllowListPerkForm = ({ perk }: Props) => {
         }
       },
       blockchain: value => (!perkBlockchains.includes(value) ? 'Please select a blockchain' : null),
-      spot: value => (value < 0 ? 'Spot must be greater than 0' : null),
       startDate: value => (value && dayjs(value).isValid() ? null : 'Must provide a valid date'),
       endDate: (value, values) => {
         if (value && dayjs(value).isValid()) {
@@ -78,6 +74,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
         }
         return 'Must provide a valid date'
       },
+      linkToClaim: value => (z.string().url().safeParse(value).success ? null : 'Must provide a valid URL'),
     },
   })
 
@@ -86,7 +83,13 @@ export const AllowListPerkForm = ({ perk }: Props) => {
     label: blockchain,
   }))
 
-  const { mutate, isLoading } = api.perk.createAllowListPerk.useMutation({
+  const genericPerkTypes = Object.values(GenericPerkType)
+  const genericPerkTypeSelectData = genericPerkTypes.map(type => ({
+    value: type,
+    label: type,
+  }))
+
+  const { mutate, isLoading } = api.perk.createGenericPerk.useMutation({
     onError: error => {
       notifications.show({
         title: 'Error',
@@ -107,7 +110,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
   const { push } = useRouter()
   const goBack = () => {
     if (isPublished) {
-      void push(`/dashboard/allowlist/${perk?.id}`)
+      void push(`/dashboard/generic/${perk?.id}`)
     } else {
       void push('/dashboard/perks')
     }
@@ -180,10 +183,18 @@ export const AllowListPerkForm = ({ perk }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const createOrUpdatePerk = (data: Partial<CreateNftAllowListPerkSchemaType>) => {
+  const createOrUpdatePerk = (data: Partial<CreateGenericPerkSchemaType>) => {
+    if (!data.genericPerkType) {
+      return notifications.show({
+        title: 'Error',
+        message: 'Please select a perk type',
+        color: 'red',
+      })
+    }
+
     const resultToParse = {
       ...data,
-      perkType: PerkType.Allowlist,
+      perkType: PerkType.Generic,
     }
 
     if (perk?.id) {
@@ -215,7 +226,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
       resultToParse.twitterRequirement = twitterRequirement.filter(requirement => requirement.type !== '') as TwitterRequirementSchemaType[]
     }
 
-    const zodResult = createNftAllowListPerkSchema.parse(resultToParse)
+    const zodResult = createGenericPerkSchema.parse(resultToParse)
 
     mutate(zodResult)
   }
@@ -231,6 +242,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
           createOrUpdatePerk({
             ...form.values,
             status: PerkStatus.Draft,
+            genericPerkType: form.values.genericPerkType as GenericPerkType,
           })
         }
       },
@@ -244,6 +256,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
             createOrUpdatePerk({
               ...values,
               status: PerkStatus.Published,
+              genericPerkType: values.genericPerkType as GenericPerkType,
             })
           })}
         >
@@ -260,6 +273,30 @@ export const AllowListPerkForm = ({ perk }: Props) => {
                 About the perk 🔥
               </Text>
               <Stack>
+                <Box>
+                  <Text
+                    size={'sm'}
+                    fw={500}
+                    mb={4}
+                  >
+                    Perk Type
+                  </Text>
+                  <Chip.Group
+                    multiple={false}
+                    {...form.getInputProps('genericPerkType')}
+                  >
+                    <Group>
+                      {genericPerkTypeSelectData.map((item, index) => (
+                        <Chip
+                          key={index}
+                          value={item.value}
+                        >
+                          {item.label}
+                        </Chip>
+                      ))}
+                    </Group>
+                  </Chip.Group>
+                </Box>
                 <Select
                   label="Blockchain"
                   required
@@ -281,11 +318,11 @@ export const AllowListPerkForm = ({ perk }: Props) => {
                   {...form.getInputProps('description')}
                   minRows={6}
                 />
-                <NumberInput
-                  label="Number of spots"
-                  hideControls
+                <TextInput
+                  label="Link to claim"
+                  placeholder="Link to claim"
                   required
-                  {...form.getInputProps('spot')}
+                  {...form.getInputProps('linkToClaim')}
                   disabled={isPublished}
                 />
                 <Group align={'flex-start'}>
@@ -304,29 +341,6 @@ export const AllowListPerkForm = ({ perk }: Props) => {
                     w={200}
                     {...form.getInputProps('endDate')}
                     required
-                  />
-                </Group>
-                <Group>
-                  <NumberInput
-                    label="Mint Price"
-                    hideControls
-                    precision={2}
-                    placeholder={'0'}
-                    {...form.getInputProps('price')}
-                    disabled={isPublished}
-                  />
-                  <TextInput
-                    label="Symbol"
-                    placeholder="ETH"
-                    {...form.getInputProps('priceSymbol')}
-                    disabled={isPublished}
-                  />
-                  <NumberInput
-                    label="Total Supply"
-                    placeholder={'0'}
-                    hideControls
-                    {...form.getInputProps('totalSupply')}
-                    disabled={isPublished}
                   />
                 </Group>
                 <FeaturedImage
@@ -389,12 +403,11 @@ export const AllowListPerkForm = ({ perk }: Props) => {
         withBorder
         w={600}
       >
-        <AllowListPerkPreview
+        <GenericPerkPreview
           perkName={form.values.name}
           perkDescription={form.values.description}
           endDate={form.values.endDate}
           startDate={form.values.startDate}
-          spotsAvailable={form.values.spot}
           perkImage={form.values.featuredImageUrl}
         />
       </Card>
