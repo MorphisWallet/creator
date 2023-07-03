@@ -41,6 +41,15 @@ export const authRouter = createTRPCRouter({
         },
       })
 
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          address: address,
+        },
+      })
+
       return {
         message: 'Address Verified',
       }

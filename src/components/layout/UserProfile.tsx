@@ -1,12 +1,13 @@
 import { Avatar, Group, Text } from '@mantine/core'
 import { useSession } from 'next-auth/react'
 import { isAddress } from 'viem'
+import { maskAddress } from '@/utils/address'
 
-const maskWalletAddress = (address?: string | null) => {
-  if (address && isAddress(address)) {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`
+const displayUserName = (username?: string | null) => {
+  if (username && isAddress(username)) {
+    return maskAddress(username)
   }
-  return address
+  return username
 }
 
 export const UserProfile = () => {
@@ -19,7 +20,7 @@ export const UserProfile = () => {
         alt="avatar"
         radius={'xl'}
       />
-      <Text>{maskWalletAddress(data?.user?.name)}</Text>
+      <Text>{displayUserName(data?.user?.name)}</Text>
     </Group>
   )
 }

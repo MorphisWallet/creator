@@ -41,7 +41,7 @@ export const ProjectInfo = ({ name, description, link }: ProjectInfoProps) => {
   })
 
   return (
-    <Box maw={500}>
+    <Box>
       <form
         onSubmit={form.onSubmit(values => {
           mutate(values)

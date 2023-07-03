@@ -29,6 +29,9 @@ declare module 'next-auth' {
       twitter: {
         username: string
       }
+      discord: {
+        username: string
+      }
     } & DefaultSession['user']
   }
 
@@ -59,12 +62,18 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
   callbacks: {
     session: async ({ session, user, token }) => {
       const id = token?.sub ?? user.id
-      const twitterUserName = await prisma.user.findFirst({
+      const dbUser = await prisma.user.findFirst({
         where: {
           id,
         },
         select: {
+          address: true,
           twitter: {
+            select: {
+              username: true,
+            },
+          },
+          discord: {
             select: {
               username: true,
             },
@@ -77,8 +86,12 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
         user: {
           ...session.user,
           id,
+          address: dbUser?.address,
           twitter: {
-            username: twitterUserName?.twitter?.username ?? '',
+            username: dbUser?.twitter?.username ?? '',
+          },
+          discord: {
+            username: dbUser?.discord?.username ?? '',
           },
         },
       }
