@@ -10,6 +10,8 @@ import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
 import { type CtxOrReq } from 'next-auth/client/_utils'
 import { z } from 'zod'
+import { type DiscordProfile } from 'next-auth/src/providers/discord'
+import { type TwitterProfile as TwitterProfileType, type DiscordProfile as DiscordProfileType } from '@prisma/client'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -30,10 +32,12 @@ declare module 'next-auth' {
     } & DefaultSession['user']
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    twitter?: TwitterProfileType
+    discord?: DiscordProfileType
+    // ...other properties
+    // role: UserRole;
+  }
 }
 
 type TwitterProfile = {
@@ -80,6 +84,24 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
       }
     },
   },
+  events: {
+    async linkAccount({ user, account, profile }) {
+      const provider = account.provider
+      if (provider === 'twitter' || provider === 'discord') {
+        const providerProfile = user[provider]
+        if (!providerProfile) {
+          await prisma.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              [provider]: profile[provider],
+            },
+          })
+        }
+      }
+    },
+  },
   adapter: PrismaAdapter(prisma),
   providers: [
     TwitterProvider<TwitterProfile>({
@@ -101,9 +123,30 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
         }
       },
     }),
-    DiscordProvider({
+    DiscordProvider<DiscordProfile>({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
+      profile(profile) {
+        if (profile.avatar === null) {
+          const defaultAvatarNumber = parseInt(profile.discriminator) % 5
+          profile.image_url = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`
+        } else {
+          const format = profile.avatar.startsWith('a_') ? 'gif' : 'png'
+          profile.image_url = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`
+        }
+        return {
+          id: profile.id,
+          name: profile.username,
+          email: profile.email,
+          image: profile.image_url,
+          discord: {
+            id: profile.id,
+            name: profile.username,
+            username: profile.username,
+            image: profile.image_url,
+          },
+        }
+      },
     }),
     CredentialsProvider({
       name: 'Ethereum',

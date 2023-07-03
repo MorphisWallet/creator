@@ -61,11 +61,19 @@ model User {
   updatedAt     DateTime        @updatedAt
   perks         Perk[]
   twitter       TwitterProfile?
+  discord       DiscordProfile?
 
   @@map("creator_user")
 }
 
 type TwitterProfile {
+  id       String
+  name     String?
+  username String?
+  image    String?
+}
+
+type DiscordProfile {
   id       String
   name     String?
   username String?
