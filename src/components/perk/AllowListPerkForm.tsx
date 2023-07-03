@@ -1,5 +1,5 @@
 import { type Perk, PerkBlockchain, PerkStatus, PerkType } from '@prisma/client'
-import { Button, Card, Group, NumberInput, Select, Stack, Textarea, TextInput } from '@mantine/core'
+import { Button, Card, Group, NumberInput, Select, Stack, Textarea, TextInput, Text, Box } from '@mantine/core'
 import { DateTimePicker } from '@mantine/dates'
 import { FeaturedImage } from '@/components/perk/FeaturedImage'
 import { TokenRequirement, useTokenRequirementStore } from '@/components/perk/TokenRequirement'
@@ -238,13 +238,7 @@ export const AllowListPerkForm = ({ perk }: Props) => {
 
   return (
     <Group align="flex-start">
-      <Card
-        shadow="sm"
-        padding="lg"
-        radius="md"
-        withBorder
-        sx={{ flex: 1 }}
-      >
+      <Box sx={{ flex: 1 }}>
         <form
           onSubmit={form.onSubmit(values => {
             createOrUpdatePerk({
@@ -254,82 +248,114 @@ export const AllowListPerkForm = ({ perk }: Props) => {
           })}
         >
           <Stack>
-            <Select
-              label="Blockchain"
-              required
-              data={blockchainSelectData}
-              {...form.getInputProps('blockchain')}
-              disabled={isPublished}
-            />
-            <TextInput
-              label="Name of the Perk"
-              placeholder="Name of the Perk"
-              required
-              {...form.getInputProps('name')}
-              disabled={isPublished}
-            />
-            <Textarea
-              label="Description"
-              placeholder="The description of the perk"
-              required
-              {...form.getInputProps('description')}
-              minRows={6}
-            />
-            <NumberInput
-              label="Number of spots"
-              hideControls
-              required
-              {...form.getInputProps('spot')}
-              disabled={isPublished}
-            />
-            <Group align={'flex-start'}>
-              <DateTimePicker
-                label="Perk start date"
-                placeholder="Pick date and time"
-                required
-                valueFormat="DD MMMM YYYY HH:mm"
-                w={200}
-                {...form.getInputProps('startDate')}
-              />
-              <DateTimePicker
-                label="Perk end date"
-                placeholder="Pick date and time"
-                valueFormat="DD MMMM YYYY HH:mm"
-                w={200}
-                {...form.getInputProps('endDate')}
-                required
-              />
-            </Group>
-            <Group>
-              <NumberInput
-                label="Mint Price"
-                hideControls
-                precision={2}
-                placeholder={'0'}
-                {...form.getInputProps('price')}
-                disabled={isPublished}
-              />
-              <TextInput
-                label="Symbol"
-                placeholder="ETH"
-                {...form.getInputProps('priceSymbol')}
-                disabled={isPublished}
-              />
-              <NumberInput
-                label="Total Supply"
-                placeholder={'0'}
-                hideControls
-                {...form.getInputProps('totalSupply')}
-                disabled={isPublished}
-              />
-            </Group>
-            <FeaturedImage
-              initialImageUrl={form.values.featuredImageUrl}
-              onImageUrlChange={url => form.setFieldValue('featuredImageUrl', url)}
-              disabled={isPublished}
-            />
-            <TwitterRequirement disabled={isPublished} />
-            <TokenRequirement disabled={isPublished} />
+            <Card
+              padding="lg"
+              radius="md"
+              withBorder
+            >
+              <Text
+                size={'xl'}
+                mb={'md'}
+              >
+                About the perk 🔥
+              </Text>
+              <Stack>
+                <Select
+                  label="Blockchain"
+                  required
+                  data={blockchainSelectData}
+                  {...form.getInputProps('blockchain')}
+                  disabled={isPublished}
+                />
+                <TextInput
+                  label="Name of the Perk"
+                  placeholder="Name of the Perk"
+                  required
+                  {...form.getInputProps('name')}
+                  disabled={isPublished}
+                />
+                <Textarea
+                  label="Description"
+                  placeholder="The description of the perk"
+                  required
+                  {...form.getInputProps('description')}
+                  minRows={6}
+                />
+                <NumberInput
+                  label="Number of spots"
+                  hideControls
+                  required
+                  {...form.getInputProps('spot')}
+                  disabled={isPublished}
+                />
+                <Group align={'flex-start'}>
+                  <DateTimePicker
+                    label="Perk start date"
+                    placeholder="Pick date and time"
+                    required
+                    valueFormat="DD MMMM YYYY HH:mm"
+                    w={200}
+                    {...form.getInputProps('startDate')}
+                  />
+                  <DateTimePicker
+                    label="Perk end date"
+                    placeholder="Pick date and time"
+                    valueFormat="DD MMMM YYYY HH:mm"
+                    w={200}
+                    {...form.getInputProps('endDate')}
+                    required
+                  />
+                </Group>
+                <Group>
+                  <NumberInput
+                    label="Mint Price"
+                    hideControls
+                    precision={2}
+                    placeholder={'0'}
+                    {...form.getInputProps('price')}
+                    disabled={isPublished}
+                  />
+                  <TextInput
+                    label="Symbol"
+                    placeholder="ETH"
+                    {...form.getInputProps('priceSymbol')}
+                    disabled={isPublished}
+                  />
+                  <NumberInput
+                    label="Total Supply"
+                    placeholder={'0'}
+                    hideControls
+                    {...form.getInputProps('totalSupply')}
+                    disabled={isPublished}
+                  />
+                </Group>
+                <FeaturedImage
+                  initialImageUrl={form.values.featuredImageUrl}
+                  onImageUrlChange={url => form.setFieldValue('featuredImageUrl', url)}
+                  disabled={isPublished}
+                />
+              </Stack>
+            </Card>
+            <Text
+              size="xl"
+              fw={'bold'}
+            >
+              Requirements ✨
+            </Text>
+            <Card
+              padding="md"
+              radius="md"
+              withBorder
+            >
+              <TwitterRequirement disabled={isPublished} />
+            </Card>
+            <Card
+              padding="md"
+              radius="md"
+              withBorder
+            >
+              <TokenRequirement disabled={isPublished} />
+            </Card>
             <Group>
               <Button
                 onClick={() => {
@@ -340,21 +366,24 @@ export const AllowListPerkForm = ({ perk }: Props) => {
                   }
                 }}
                 variant={'outline'}
+                size={'md'}
+                miw={200}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 loading={isLoading}
+                size={'md'}
+                miw={200}
               >
                 Submit
               </Button>
             </Group>
           </Stack>
         </form>
-      </Card>
+      </Box>
       <Card
-        shadow="sm"
         padding="lg"
         radius="md"
         withBorder
