@@ -13,8 +13,8 @@ export const AccountConnect = () => {
   const { data, update, status } = useSession()
   const isLoading = status === 'loading'
   const callbackUrl = '/dashboard/project'
-  const twitterUserName = data?.user?.twitter?.username ?? 'Connect Twitter'
-  const discordUserName = data?.user?.discord?.username ?? 'Connect Discord'
+  const twitterUserName = data?.user?.twitter?.username
+  const discordUserName = data?.user?.discord?.username
   const ethereumAddress = data?.user?.address
 
   const [isAddressVerified, setIsAddressVerified] = useState(false)
@@ -106,7 +106,7 @@ export const AccountConnect = () => {
                   </clipPath>
                 </defs>
               </svg>
-              <Text>{twitterUserName}</Text>
+              <Text>{twitterUserName || 'Connect Twitter'}</Text>
             </Group>
             {!twitterUserName && (
               <Button
@@ -160,7 +160,7 @@ export const AccountConnect = () => {
                 </defs>
               </svg>
 
-              <Text>{discordUserName}</Text>
+              <Text>{discordUserName || 'Connect Discord'}</Text>
             </Group>
             {!discordUserName && (
               <Button
