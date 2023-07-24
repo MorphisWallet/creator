@@ -1,5 +1,5 @@
 import { createStyles, Navbar, getStylesRef, rem, Center } from '@mantine/core'
-import { IconPaint, IconLogout, IconSettings, IconGift } from '@tabler/icons-react'
+import { IconPaint, IconLogout, IconSettings } from '@tabler/icons-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import LogoImage from '@/assets/images/airdawg-logo.png'

@@ -10,7 +10,7 @@ import { SiweMessage } from 'siwe'
 import { getCsrfToken } from 'next-auth/react'
 import { type CtxOrReq } from 'next-auth/client/_utils'
 import { z } from 'zod'
-import { type DiscordProfile } from 'next-auth/src/providers/discord'
+import { type DiscordProfile } from 'next-auth/providers/discord'
 import { type TwitterProfile as TwitterProfileType, type DiscordProfile as DiscordProfileType } from '@prisma/client'
 
 /**
