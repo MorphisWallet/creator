@@ -51,9 +51,8 @@ const useStyles = createStyles(theme => ({
 }))
 
 const data = [
-  { link: '/dashboard/template', label: 'Template', icon: IconGift },
-  { link: '/dashboard/perks', label: 'Perks', icon: IconPaint },
-  { link: '/dashboard/project', label: 'Project', icon: IconSettings },
+  { link: '/dashboard/project', label: 'Project', icon: IconPaint },
+  { link: '/dashboard/settings', label: 'Settings', icon: IconSettings },
 ]
 
 export const Sidebar = () => {
@@ -62,7 +61,7 @@ export const Sidebar = () => {
 
   const links = data.map(item => (
     <Link
-      className={cx(classes.link, { [classes.linkActive]: item.link === router.pathname })}
+      className={cx(classes.link, { [classes.linkActive]: router.pathname.startsWith(item.link) })}
       href={item.link}
       key={item.label}
     >

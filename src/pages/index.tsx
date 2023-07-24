@@ -15,7 +15,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (session) {
     return {
       redirect: {
-        destination: '/dashboard/template',
+        destination: '/dashboard/project',
         permanent: false,
       },
     }
@@ -26,7 +26,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 const Home = () => {
-  const callbackUrl = '/dashboard/template'
+  const callbackUrl = '/dashboard/project'
   const { openConnectModal } = useConnectModal()
 
   /** handle sign in with ethereum with rainbowkit* */

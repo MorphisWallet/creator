@@ -33,7 +33,7 @@ model Account {
   updatedAt         DateTime @updatedAt
 
   @@unique([provider, providerAccountId])
-  @@map("creator_account")
+  @@map("creator_accounts")
 }
 
 model Session {
@@ -43,7 +43,7 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("creator_session")
+  @@map("creator_sessions")
 }
 
 model User {
@@ -55,14 +55,13 @@ model User {
   accounts      Account[]
   sessions      Session[]
   address       String?         @unique
-  project       Project?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  perks         Perk[]
+  projects      Project[]
   twitter       TwitterProfile?
   discord       DiscordProfile?
 
-  @@map("creator_user")
+  @@map("creator_users")
 }
 
 type TwitterProfile {
@@ -86,155 +85,58 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-  @@map("creator_verification_token")
+  @@map("creator_verification_tokens")
 }
 
 model Project {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @unique @db.ObjectId
-  name        String
-  description String
-  link        String
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  perk        Perk[]
+  id             String            @id @default(auto()) @map("_id") @db.ObjectId
+  blockchain     ProjectBlockchain
+  name           String
+  logoUrl        String
+  description    String
+  website        String?
+  twitter        String?
+  discord        String?
+  bannerImage    String
+  categories     Category[]
+  previewImages  String[]
+  projectStage   ProjectStage
+  status         ProjectStatus
+  reportedAsSpam Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  userId         String            @db.ObjectId
+  user           User              @relation(fields: [userId], references: [id])
 
-  @@map("creator_project")
+  @@map("creator_projects")
 }
 
-model Perk {
-  id                     String                  @id @default(auto()) @map("_id") @db.ObjectId
-  name                   String
-  description            String
-  type                   PerkType
-  featuredImageUrl       String?
-  blockchain             PerkBlockchain
-  status                 PerkStatus
-  startDate              DateTime
-  endDate                DateTime
-  project                Project                 @relation(fields: [projectId], references: [id])
-  projectId              String                  @db.ObjectId
-  createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
-  userId                 String                  @db.ObjectId
-  user                   User                    @relation(fields: [userId], references: [id])
-  allowList              AllowList?
-  generic                Generic?
-  tokenHolderRequirement TokenHolderRequirement?
-  twitterRequirement     TwitterRequirement[]
-  walletInteraction      WalletInteraction[]
-  Claimed                Claimed[]
-
-  @@map("creator_perk")
-}
-
-enum PerkStatus {
+enum ProjectStatus {
   Draft
+  InReview
   Published
 }
 
-type AllowList {
-  spots       Int
-  spotsUsed   Int?    @default(0)
-  price       Float?
-  priceSymbol String?
-  totalSupply Int?
+enum ProjectStage {
+  Mainnet
+  InDevelopment
 }
 
-type Generic {
-  link String
-  type GenericPerkType
-}
-
-type TokenHolderRequirement {
-  mustHoldTokenContracts String[]
-  tokenRequirement       TokenRequirement[]
-}
-
-type TokenRequirement {
-  tokenType       TokenType
-  blockchain      TokenRequirementBlockChain
-  contractAddress String
-  mustHoldAmount  BigInt
-  tokenSymbol     String?
-  tokenName       String?
-  logoUrl         String?
-}
-
-enum TokenType {
-  Token
+enum Category {
   NFT
+  Game
+  DeFi
+  Tooling
+  Dao
+  Infrastructure
+  Social
+  Others
 }
 
-enum PerkType {
-  Allowlist
-  Generic
-}
-
-enum PerkBlockchain {
+enum ProjectBlockchain {
   Ethereum
   Polygon
   Solana
   Sui
   BSC
-}
-
-enum TokenRequirementBlockChain {
-  Ethereum
-  Polygon
-}
-
-type TwitterRequirement {
-  type  TwitterRequirementType
-  value String
-}
-
-enum TwitterRequirementType {
-  Follow
-  Like
-  Reply
-  Retweet
-  JoinSpace
-}
-
-type WalletInteraction {
-  blockchain            WalletInteractionBlockchain
-  contract              String
-  interaction           String
-  interactionCount      Int
-  interactionPeriod     Int
-  interactionPeriodType InteractionPeriodType
-}
-
-enum WalletInteractionBlockchain {
-  Ethereum
-  Polygon
-}
-
-enum InteractionPeriodType {
-  Day
-  Month
-  Year
-}
-
-enum GenericPerkType {
-  Airdrop
-  Allowlist
-  Quest
-  Discount
-  Merch
-  Other
-}
-
-model Claimed {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  walletAddress String
-  twitterName   String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  perkId        String   @db.ObjectId
-  perk          Perk     @relation(fields: [perkId], references: [id])
-
-  @@map("creator_claimed")
 }
