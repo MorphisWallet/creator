@@ -27,7 +27,7 @@ export default class _Document extends Document {
         <Head>
           <meta
             name="description"
-            content="Airdawg Creator"
+            content="Kiosk Creator"
           />
           <link
             rel="icon"

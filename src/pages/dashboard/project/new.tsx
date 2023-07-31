@@ -12,7 +12,7 @@ export default function NewProjectPage() {
   return (
     <DashboardLayout>
       <Head>
-        <title>Airdawg - Submit a project</title>
+        <title>Kiosk - Submit a project</title>
       </Head>
       <Group>
         <ActionIcon

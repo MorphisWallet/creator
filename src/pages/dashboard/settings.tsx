@@ -7,7 +7,7 @@ export default function Settings() {
   return (
     <DashboardLayout>
       <Head>
-        <title>Airdawg - Settings</title>
+        <title>Kiosk - Settings</title>
       </Head>
       <h1>Settings</h1>
       <Box w={550}>

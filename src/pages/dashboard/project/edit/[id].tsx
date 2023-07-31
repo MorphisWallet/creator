@@ -62,7 +62,7 @@ export default function ProjectEdit({ project }: Props) {
   return (
     <DashboardLayout>
       <Head>
-        <title>Airdawg - {name}</title>
+        <title>Kiosk - {name}</title>
       </Head>
       <Group>
         <ActionIcon

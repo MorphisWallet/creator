@@ -11,7 +11,7 @@ import { getCsrfToken } from 'next-auth/react'
 import { type CtxOrReq } from 'next-auth/client/_utils'
 import { z } from 'zod'
 import { type DiscordProfile } from 'next-auth/providers/discord'
-import { type TwitterProfile as TwitterProfileType, type DiscordProfile as DiscordProfileType } from '@prisma/client'
+import { type TwitterProfile as TwitterProfileType, type DiscordProfile as DiscordProfileType, type Role } from '@prisma/client'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -24,8 +24,7 @@ declare module 'next-auth' {
     user: {
       id: string
       address?: string
-      // ...other properties
-      // role: UserRole;
+      role: Role
       twitter: {
         username: string
       }
@@ -68,6 +67,7 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
         },
         select: {
           address: true,
+          role: true,
           twitter: {
             select: {
               username: true,
@@ -93,6 +93,7 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
           discord: {
             username: dbUser?.discord?.username ?? '',
           },
+          role: dbUser?.role ?? 'User',
         },
       }
     },
@@ -217,11 +218,21 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
             },
           },
         })
+
+        const isAdminAddress = await prisma.adminWallet.findFirst({
+          where: {
+            address: walletAddress,
+          },
+        })
+
+        const role = isAdminAddress ? 'Admin' : 'User'
+
         if (existingAccount) {
           return {
             id: existingAccount.userId,
             name: existingAccount.user.name,
             image: existingAccount.user.image,
+            role: role,
           }
         }
 
@@ -230,6 +241,7 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
           data: {
             address: walletAddress,
             name: walletAddress,
+            role: role,
           },
         })
         await prisma.account.create({
@@ -244,6 +256,7 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
         return {
           id: user.id,
           name: user.address,
+          role: role,
         }
       },
     }),

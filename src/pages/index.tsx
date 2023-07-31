@@ -41,7 +41,7 @@ const Home = () => {
   return (
     <>
       <Head>
-        <title>Airdawg - Sign in</title>
+        <title>Kiosk - Sign in</title>
       </Head>
       <Container
         size="xs"
@@ -52,7 +52,7 @@ const Home = () => {
             src={LogoImage}
             width={270}
             height={152}
-            alt="Logo of Airdawg Creator"
+            alt="Logo of Kiosk Creator"
             priority
           />
         </Center>

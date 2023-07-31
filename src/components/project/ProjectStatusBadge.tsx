@@ -10,7 +10,8 @@ export const ProjectStatusBadge = ({ status }: Props) => {
   const badgeColorMap = {
     [ProjectStatus.Published]: 'teal',
     [ProjectStatus.InReview]: 'purple',
-    [ProjectStatus.Draft]: 'red',
+    [ProjectStatus.Draft]: 'yellow',
+    [ProjectStatus.Rejected]: 'red',
   }
 
   return (

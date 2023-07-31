@@ -22,8 +22,8 @@ const { chains, publicClient } = configureChains(
 )
 
 const { connectors } = getDefaultWallets({
-  appName: 'AirDawg Creator',
-  projectId: 'airdawg-creator',
+  appName: 'Kiosk Creator',
+  projectId: '321bbd837e6b150263cbd24c5a92b541',
   chains,
 })
 
@@ -34,7 +34,7 @@ const wagmiConfig = createConfig({
 })
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
-  statement: 'Sign in to AirDawg Creator',
+  statement: 'Sign in to Kiosk Creator',
 })
 
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {

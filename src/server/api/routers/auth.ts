@@ -31,6 +31,12 @@ export const authRouter = createTRPCRouter({
         return new Error('This address has already been verified')
       }
 
+      const isAdminAddress = await prisma.adminWallet.findFirst({
+        where: {
+          address: address,
+        },
+      })
+
       const { user } = ctx.session
       await prisma.account.create({
         data: {
@@ -47,6 +53,7 @@ export const authRouter = createTRPCRouter({
         },
         data: {
           address: address,
+          role: isAdminAddress ? 'Admin' : 'User',
         },
       })
 

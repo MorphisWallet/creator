@@ -1,4 +1,20 @@
-import { Button, Card, Group, Select, Stack, Textarea, TextInput, Text, Box, Checkbox, Radio } from '@mantine/core'
+import {
+  Button,
+  Card,
+  Group,
+  Select,
+  Stack,
+  Textarea,
+  TextInput,
+  Text,
+  Box,
+  Checkbox,
+  Radio,
+  Modal,
+  Image,
+  SimpleGrid,
+  Center,
+} from '@mantine/core'
 import { BannerImage } from '@/components/project/BannerImage'
 import { useForm } from '@mantine/form'
 import { api } from '@/utils/api'
@@ -11,6 +27,9 @@ import { LogoUpload } from '@/components/project/LogoUpload'
 import { PreviewImage } from '@/components/project/PreviewImage'
 import { pascalToNormal } from '@/utils/string'
 import { ProjectPreview } from '@/components/project/ProjectPreview'
+import { useSession } from 'next-auth/react'
+import { useDisclosure } from '@mantine/hooks'
+import { ProjectStatusBadge } from '@/components/project/ProjectStatusBadge'
 
 type Props = {
   project?: Project
@@ -31,6 +50,9 @@ type FormValues = {
 }
 
 export const ProjectForm = ({ project }: Props) => {
+  const { data } = useSession()
+  const [isOpened, handler] = useDisclosure(false)
+  const isAdmin = data?.user?.role === 'Admin'
   const isPublished = project?.status === 'Published'
   const projectBlockchain = Object.values(ProjectBlockchain)
   const categories = Object.values(Category)
@@ -86,7 +108,11 @@ export const ProjectForm = ({ project }: Props) => {
     label: pascalToNormal(stage),
   }))
 
-  const { mutate, isLoading } = api.project.createOrUpdate.useMutation({
+  const {
+    mutate,
+    isLoading,
+    data: projectData,
+  } = api.project.createOrUpdate.useMutation({
     onError: error => {
       notifications.show({
         title: 'Error',
@@ -94,22 +120,35 @@ export const ProjectForm = ({ project }: Props) => {
         color: 'red',
       })
     },
-    onSuccess: data => {
+    onSuccess: () => {
       notifications.show({
         title: 'Success',
-        message: data.message,
+        message: 'Project saved successfully',
         color: 'green',
       })
-      void goBack()
+      if (isAdmin) {
+        void goBack()
+      } else {
+        handler.open()
+      }
     },
   })
 
   const { push } = useRouter()
+
+  const goToProject = () => {
+    void push('/dashboard/project')
+  }
+
+  const goToDetails = (id: string) => {
+    void push(`/dashboard/project/${id}`)
+  }
+
   const goBack = () => {
     if (isPublished) {
-      void push(`/dashboard/project/${project?.id}`)
+      goToDetails(project?.id)
     } else {
-      void push('/dashboard/project')
+      goToProject()
     }
   }
 
@@ -171,9 +210,10 @@ export const ProjectForm = ({ project }: Props) => {
       <Box sx={{ flex: 1 }}>
         <form
           onSubmit={form.onSubmit(values => {
+            const status = isAdmin ? ProjectStatus.Published : ProjectStatus.InReview
             createOrUpdateProject({
               ...values,
-              status: ProjectStatus.Published,
+              status,
             })
           })}
         >
@@ -338,6 +378,73 @@ export const ProjectForm = ({ project }: Props) => {
           logoUrl={form.values.logoUrl}
         />
       </Box>
+      <Modal
+        opened={isOpened}
+        onClose={handler.close}
+        size={'xl'}
+        withCloseButton={false}
+        closeOnEscape={false}
+        closeOnClickOutside={false}
+      >
+        <Image
+          src={form.values.bannerImage}
+          height={280}
+          fit={'cover'}
+          alt={'Project banner image'}
+          withPlaceholder
+          mt={'md'}
+        />
+        <Image
+          src={form.values.logoUrl}
+          height={94}
+          width={94}
+          alt={'logo'}
+          radius={'50%'}
+          withPlaceholder
+          mx={'auto'}
+          sx={{ position: 'relative', top: -42 }}
+        />
+        <Center>
+          <ProjectStatusBadge status={'InReview'} />
+        </Center>
+        <Text
+          size={'xl'}
+          fw={'bold'}
+          mt={'xl'}
+          align={'center'}
+        >
+          {form.values.name} has been submitted for review
+        </Text>
+        <Text
+          color={'dimmed'}
+          mb={'xl'}
+          align={'center'}
+        >
+          It will be published after we review it
+        </Text>
+        <SimpleGrid
+          cols={2}
+          spacing="lg"
+        >
+          <Button
+            color={'dark'}
+            radius={'xl'}
+            w={'100%'}
+            onClick={goToProject}
+          >
+            My products
+          </Button>
+          <Button
+            variant={'outline'}
+            color={'dark'}
+            radius={'xl'}
+            w={'100%'}
+            onClick={() => goToDetails(projectData?.project?.id ?? '')}
+          >
+            See preview
+          </Button>
+        </SimpleGrid>
+      </Modal>
     </Group>
   )
 }

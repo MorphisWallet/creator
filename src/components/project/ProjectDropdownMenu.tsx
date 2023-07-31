@@ -3,16 +3,22 @@ import { useQueryClient } from '@tanstack/react-query'
 import { getQueryKey } from '@trpc/react-query'
 import { api } from '@/utils/api'
 import { notifications } from '@mantine/notifications'
-import { ActionIcon, LoadingOverlay, Menu } from '@mantine/core'
+import { ActionIcon, LoadingOverlay, Menu, Text } from '@mantine/core'
 import { IconDots, IconEdit, IconTrash } from '@tabler/icons-react'
 import { type inferRouterOutputs } from '@trpc/server'
 import { type AppRouter } from '@/server/api/root'
+import { modals } from '@mantine/modals'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 
 type ProjectListOutput = RouterOutput['project']['list']
 
-export const ProjectDropdownMenu = ({ id }: { id: string }) => {
+type Props = {
+  id: string
+  onDeleted?: () => void
+}
+
+export const ProjectDropdownMenu = ({ id, onDeleted }: Props) => {
   const router = useRouter()
   const goToEdit = () => {
     void router.push(`/dashboard/project/edit/${id}`)
@@ -20,6 +26,14 @@ export const ProjectDropdownMenu = ({ id }: { id: string }) => {
 
   const queryClient = useQueryClient()
   const queryKey = getQueryKey(api.project.list, undefined, 'query')
+
+  const confirmDelete = () =>
+    modals.openConfirmModal({
+      title: 'Please confirm your action',
+      children: <Text size="sm">Are you sure you want to delete this project?</Text>,
+      labels: { confirm: 'Confirm', cancel: 'Cancel' },
+      onConfirm: () => mutate(id),
+    })
 
   const { mutate, isLoading } = api.project.deleteById.useMutation({
     onError: error => {
@@ -45,6 +59,7 @@ export const ProjectDropdownMenu = ({ id }: { id: string }) => {
           projects: old.projects.filter(item => item.id !== id),
         }
       })
+      onDeleted?.()
     },
   })
 
@@ -74,7 +89,7 @@ export const ProjectDropdownMenu = ({ id }: { id: string }) => {
         <Menu.Item
           color="red"
           icon={<IconTrash size={14} />}
-          onClick={() => mutate(id)}
+          onClick={confirmDelete}
         >
           Delete
         </Menu.Item>

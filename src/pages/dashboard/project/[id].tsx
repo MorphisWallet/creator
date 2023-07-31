@@ -4,12 +4,13 @@ import Head from 'next/head'
 import { ActionIcon, Badge, Box, Group, Image, Space, Text } from '@mantine/core'
 import { IconArrowLeft } from '@tabler/icons-react'
 import { type GetServerSideProps } from 'next'
-import { type Project } from '@prisma/client'
+import { type Project, type Prisma } from '@prisma/client'
 import { prisma } from '@/server/db'
 import { getSession } from 'next-auth/react'
 import { ProjectStatusBadge } from '@/components/project/ProjectStatusBadge'
 import { ProjectDropdownMenu } from '@/components/project/ProjectDropdownMenu'
 import { Carousel } from '@mantine/carousel'
+import { RejectMessage } from '@/components/project/RejectMessage'
 
 type Props = {
   project: Project
@@ -31,11 +32,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       },
     }
   }
+
+  const filter: Prisma.ProjectWhereUniqueInput = {
+    id,
+  }
+  if (session.user.role !== 'Admin') {
+    filter['userId'] = session.user.id
+  }
   const project = await prisma.project.findUnique({
-    where: {
-      id,
-      userId: session.user.id,
-    },
+    where: filter,
   })
   if (!project) {
     return {
@@ -139,16 +144,21 @@ const DiscordLink = ({ url }: { url?: string | null }) => {
 }
 
 export default function ProjectDetailPage({ project }: Props) {
-  const { push } = useRouter()
-  const goBack = () => push('/dashboard/project')
+  const { push, query } = useRouter()
+  const goBack = () => {
+    if (query?.from === 'admin') return push('/dashboard/admin')
+    return push('/dashboard/project')
+  }
 
   const projectName = project?.name
 
   return (
     <DashboardLayout>
       <Head>
-        <title>Airdawg - Project - {projectName}</title>
+        <title>Kiosk - Project - {projectName}</title>
       </Head>
+      <Space h={'md'} />
+      {project.status === 'Rejected' && <RejectMessage message={project.rejectedReason} />}
       <Space h={'md'} />
       <Box sx={{ position: 'relative' }}>
         <ActionIcon
@@ -199,7 +209,10 @@ export default function ProjectDetailPage({ project }: Props) {
         </Text>
         <Group>
           <ProjectStatusBadge status={project.status} />
-          <ProjectDropdownMenu id={project.id} />
+          <ProjectDropdownMenu
+            id={project.id}
+            onDeleted={() => void goBack()}
+          />
         </Group>
       </Group>
       <Carousel

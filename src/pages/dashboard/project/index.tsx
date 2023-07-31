@@ -28,7 +28,7 @@ export default function Project({ hasVerifiedTwitter }: Props) {
   return (
     <DashboardLayout>
       <Head>
-        <title>Airdawg - Projects</title>
+        <title>Kiosk - Projects</title>
       </Head>
       <h1>Project</h1>
       <Box>

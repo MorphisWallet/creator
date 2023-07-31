@@ -3,6 +3,7 @@ import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 import { prisma } from '@/server/db'
 import { projectCreateOrUpdateSchema } from '@/schemas/project'
 import { z } from 'zod'
+import { type Project } from '@prisma/client'
 
 export const projectRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
@@ -25,6 +26,7 @@ export const projectRouter = createTRPCRouter({
   }),
   createOrUpdate: protectedProcedure.input(projectCreateOrUpdateSchema).mutation(async ({ input, ctx }) => {
     const { user } = ctx.session
+    const isAdmin = user.role === 'Admin'
     if (!user.twitter.username) {
       throw new Error('User must have verified Twitter account to create project')
     }
@@ -40,8 +42,9 @@ export const projectRouter = createTRPCRouter({
         ...input,
       }
       delete updateData.id
+      let projectData: Project
       if (project.status === 'Published') {
-        await prisma.project.update({
+        projectData = await prisma.project.update({
           where: {
             id: input.id,
             userId: user.id,
@@ -54,7 +57,7 @@ export const projectRouter = createTRPCRouter({
           },
         })
       } else {
-        await prisma.project.update({
+        projectData = await prisma.project.update({
           where: {
             id: input.id,
             userId: user.id,
@@ -65,11 +68,15 @@ export const projectRouter = createTRPCRouter({
         })
       }
       return {
-        message: 'Project Updated',
+        project: projectData,
       }
     }
 
-    await prisma.project.create({
+    if (!isAdmin && input.status === 'Published') {
+      throw new Error('Only admins can publish projects')
+    }
+
+    const createdProject = await prisma.project.create({
       data: {
         ...input,
         userId: user.id,
@@ -77,7 +84,7 @@ export const projectRouter = createTRPCRouter({
     })
 
     return {
-      message: 'Project Created',
+      project: createdProject,
     }
   }),
   deleteById: protectedProcedure.input(z.string()).mutation(async ({ input, ctx }) => {

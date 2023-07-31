@@ -1,7 +1,7 @@
 import { createStyles, Navbar, getStylesRef, rem, Center } from '@mantine/core'
-import { IconPaint, IconLogout, IconSettings } from '@tabler/icons-react'
+import { IconPaint, IconLogout, IconSettings, IconUserPlus } from '@tabler/icons-react'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import LogoImage from '@/assets/images/airdawg-logo.png'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -50,14 +50,18 @@ const useStyles = createStyles(theme => ({
   },
 }))
 
-const data = [
-  { link: '/dashboard/project', label: 'Project', icon: IconPaint },
-  { link: '/dashboard/settings', label: 'Settings', icon: IconSettings },
-]
-
 export const Sidebar = () => {
   const { classes, cx } = useStyles()
   const router = useRouter()
+
+  const session = useSession()
+  const isAdmin = session?.data?.user?.role === 'Admin'
+
+  const data = [
+    { link: '/dashboard/project', label: 'Project', icon: IconPaint },
+    ...(isAdmin ? [{ link: '/dashboard/admin', label: 'Admin', icon: IconUserPlus }] : []),
+    { link: '/dashboard/settings', label: 'Settings', icon: IconSettings },
+  ]
 
   const links = data.map(item => (
     <Link
@@ -88,7 +92,7 @@ export const Sidebar = () => {
             src={LogoImage}
             width={135}
             height={76}
-            alt="Logo of Airdawg Creator"
+            alt="Logo of Kiosk Creator"
             priority
           />
         </Center>

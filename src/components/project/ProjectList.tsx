@@ -49,7 +49,7 @@ const EmptyPerkMessage = () => {
   )
 }
 
-type ProjectStatusFilter = 'published' | 'draft' | 'in-review' | 'all'
+type ProjectStatusFilter = 'published' | 'draft' | 'in-review' | 'all' | 'rejected'
 
 export const ProjectList = () => {
   const [status, setStatus] = useState('all')
@@ -60,21 +60,21 @@ export const ProjectList = () => {
     { label: '✨ Published', value: 'published' },
     { label: '📄 In Review', value: 'in-review' },
     { label: '✏️ Draft', value: 'draft' },
+    { label: '❌️ Rejected', value: 'rejected' },
   ]
 
   const filteredProjects =
     data?.projects.filter(perk => {
       if (status === 'all') {
         return true
-      }
-      if (status === 'draft') {
+      } else if (status === 'draft') {
         return perk.status === 'Draft'
-      }
-      if (status === 'in-review') {
+      } else if (status === 'in-review') {
         return perk.status === 'InReview'
-      }
-      if (status === 'published') {
+      } else if (status === 'published') {
         return perk.status === 'Published'
+      } else if (status === 'rejected') {
+        return perk.status === 'Rejected'
       }
       return false
     }) ?? []
