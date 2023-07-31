@@ -43,3 +43,6 @@ yarn-error.log*
 
 #editors
 .idea
+
+# Sentry Auth Token
+.sentryclirc
