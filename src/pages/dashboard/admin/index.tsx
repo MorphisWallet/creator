@@ -1,17 +1,32 @@
 import Head from 'next/head'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { api } from '@/utils/api'
-import { Button, Group, Image, Modal, Pagination, Select, Table, TextInput, Text, Checkbox, LoadingOverlay, Center } from '@mantine/core'
+import {
+  Button,
+  Group,
+  Image,
+  Modal,
+  Pagination,
+  Select,
+  Table,
+  TextInput,
+  Text,
+  Checkbox,
+  LoadingOverlay,
+  Center,
+  Switch,
+} from '@mantine/core'
 import { useRouter } from 'next/router'
 import dayjs from 'dayjs'
 import { ProjectStatusBadge } from '@/components/project/ProjectStatusBadge'
 import { notifications } from '@mantine/notifications'
 import { useState } from 'react'
-import { useDisclosure } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import { type GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
 import { ProjectStatus } from '@prisma/client'
 import { pascalToNormal } from '@/utils/string'
+import { modals } from '@mantine/modals'
 
 export const getServerSideProps: GetServerSideProps = async context => {
   const session = await getSession(context)
@@ -34,7 +49,13 @@ export const getServerSideProps: GetServerSideProps = async context => {
   }
 }
 
-const ActionButtons = ({ id, refetch }: { id: string; refetch: () => void }) => {
+type ActionButtonsProps = {
+  id: string
+  refetch: () => void
+  isFeatured: boolean
+}
+
+const ActionButtons = ({ id, refetch, isFeatured }: ActionButtonsProps) => {
   const router = useRouter()
   const goToProjectDetail = (id: string) => {
     void router.push(`/dashboard/project/${id}?from=admin`)
@@ -96,10 +117,48 @@ const ActionButtons = ({ id, refetch }: { id: string; refetch: () => void }) => 
     },
   })
 
+  const { mutate: mutateSetFeaturedStatus, isLoading: isMutatingSetFeaturedStatus } = api.admin.setProjectFeatureStatusById.useMutation({
+    onSuccess: data => {
+      notifications.show({
+        title: 'Success',
+        message: data.message,
+        color: 'green',
+      })
+      refetch()
+    },
+    onError: error => {
+      notifications.show({
+        title: 'Error',
+        message: error.message,
+        color: 'red',
+      })
+    },
+  })
+
   const [opened, handlers] = useDisclosure(false)
+
+  const confirmDelete = () =>
+    modals.openConfirmModal({
+      title: 'Please confirm your action',
+      children: <Text size="sm">Are you sure you want to delete this project?</Text>,
+      labels: { confirm: 'Confirm', cancel: 'Cancel' },
+      onConfirm: () => mutateDeleteProject(id),
+    })
 
   return (
     <Group>
+      <Button
+        color="indigo"
+        onClick={() =>
+          mutateSetFeaturedStatus({
+            id,
+            isFeatured: !isFeatured,
+          })
+        }
+        loading={isMutatingSetFeaturedStatus}
+      >
+        Set as {isFeatured ? 'Not Featured' : 'Featured'}
+      </Button>
       <Button
         color="green"
         onClick={() => mutateApproveProject(id)}
@@ -116,7 +175,7 @@ const ActionButtons = ({ id, refetch }: { id: string; refetch: () => void }) => 
       </Button>
       <Button
         color="red"
-        onClick={() => mutateDeleteProject(id)}
+        onClick={confirmDelete}
         loading={isMutatingDeleteProject}
       >
         Delete
@@ -161,11 +220,13 @@ export default function AdminDashboard() {
   }))
   const [projectStatus, setProjectStatus] = useState<ProjectStatus[]>([ProjectStatus.InReview])
   const skip = (currentPage - 1) * pageSize
+  const [showFeatured, setShowFeatured] = useState(false)
   const { data, refetch, isRefetching } = api.admin.listProjects.useQuery(
     {
       take: pageSize,
       skip: skip,
       status: projectStatus,
+      isFeatured: showFeatured,
     },
     {
       keepPreviousData: true,
@@ -173,6 +234,11 @@ export default function AdminDashboard() {
     }
   )
   const totalPage = Math.ceil((data?.count ?? 0) / pageSize)
+
+  useDidUpdate(() => {
+    setCurrentPage(1)
+    setPageSize(10)
+  }, [projectStatus, showFeatured])
 
   const rows = data?.projects?.map(project => (
     <tr key={project.id}>
@@ -189,11 +255,14 @@ export default function AdminDashboard() {
       <td width={150}>
         <ProjectStatusBadge status={project.status} />
       </td>
+      <td>{project.isFeatured ? '✅' : '❌'}</td>
+      <td>{project.viewCount}</td>
       <td>{dayjs(project.createdAt).format('DD/MM/YYYY HH:mm')}</td>
-      <td width={500}>
+      <td width={400}>
         <ActionButtons
           id={project.id}
           refetch={() => void refetch()}
+          isFeatured={project.isFeatured}
         />
       </td>
     </tr>
@@ -204,7 +273,7 @@ export default function AdminDashboard() {
   ) : (
     <tr>
       <td
-        colSpan={6}
+        colSpan={7}
         height={200}
       >
         <Center>No data</Center>
@@ -218,10 +287,14 @@ export default function AdminDashboard() {
         <title>Kiosk - Admin</title>
       </Head>
       <h1>Admin Dashboard</h1>
-      <Group mb={'md'}>
-        <Text>Status:</Text>
+      <Group
+        mb={'md'}
+        position={'apart'}
+        align={'flex-end'}
+      >
         <Checkbox.Group
           value={projectStatus}
+          label={'Status'}
           onChange={value => setProjectStatus(value as ProjectStatus[])}
         >
           <Group>
@@ -234,6 +307,11 @@ export default function AdminDashboard() {
             ))}
           </Group>
         </Checkbox.Group>
+        <Switch
+          label="Show Featured Projects?"
+          checked={showFeatured}
+          onChange={event => setShowFeatured(event.currentTarget.checked)}
+        />
       </Group>
       <Table
         striped
@@ -249,6 +327,8 @@ export default function AdminDashboard() {
             <th>Name</th>
             <th>Logo</th>
             <th>Status</th>
+            <th>Is Featured?</th>
+            <th>View Count</th>
             <th>Created At</th>
             <th>Actions</th>
           </tr>

@@ -10,15 +10,24 @@ export const adminRouter = createTRPCRouter({
         skip: z.number().default(0).optional(),
         take: z.number().default(10).optional(),
         status: z.array(z.nativeEnum(ProjectStatus)),
+        isFeatured: z.boolean(),
       })
     )
     .query(async ({ input }) => {
-      const count = await prisma.project.count({})
+      const count = await prisma.project.count({
+        where: {
+          status: {
+            in: input.status,
+          },
+          isFeatured: input.isFeatured,
+        },
+      })
       const projects = await prisma.project.findMany({
         where: {
           status: {
             in: input.status,
           },
+          isFeatured: input.isFeatured,
         },
         orderBy: [
           {
