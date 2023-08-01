@@ -3,7 +3,7 @@ import { getSession, signIn, useSession } from 'next-auth/react'
 import { Button, Center, Container, Stack } from '@mantine/core'
 import { IconBrandTwitter, IconCurrencyEthereum, IconBrandDiscord } from '@tabler/icons-react'
 import Image from 'next/image'
-import LogoImage from '@/assets/images/airdawg-logo.png'
+import LogoImage from '@/assets/images/logo-group.png'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useDidUpdate } from '@mantine/hooks'
 import { useRouter } from 'next/router'
@@ -50,8 +50,8 @@ const Home = () => {
         <Center>
           <Image
             src={LogoImage}
-            width={270}
-            height={152}
+            width={317}
+            height={88}
             alt="Logo of Kiosk Creator"
             priority
           />

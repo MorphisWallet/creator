@@ -2,7 +2,7 @@ import { createStyles, Navbar, getStylesRef, rem, Center } from '@mantine/core'
 import { IconPaint, IconLogout, IconSettings, IconUserPlus } from '@tabler/icons-react'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
-import LogoImage from '@/assets/images/airdawg-logo.png'
+import LogoImage from '@/assets/images/logo-group.png'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 
@@ -90,8 +90,8 @@ export const Sidebar = () => {
         <Center mb={32}>
           <Image
             src={LogoImage}
-            width={135}
-            height={76}
+            width={158.5}
+            height={44}
             alt="Logo of Kiosk Creator"
             priority
           />
