@@ -14,7 +14,7 @@ import {
   Checkbox,
   LoadingOverlay,
   Center,
-  Switch,
+  Radio,
 } from '@mantine/core'
 import { useRouter } from 'next/router'
 import dayjs from 'dayjs'
@@ -218,15 +218,15 @@ export default function AdminDashboard() {
     value: status,
     label: pascalToNormal(status),
   }))
+  const [featuredValue, setFeaturedValue] = useState('All')
   const [projectStatus, setProjectStatus] = useState<ProjectStatus[]>([ProjectStatus.InReview])
   const skip = (currentPage - 1) * pageSize
-  const [showFeatured, setShowFeatured] = useState(false)
   const { data, refetch, isRefetching } = api.admin.listProjects.useQuery(
     {
       take: pageSize,
       skip: skip,
       status: projectStatus,
-      isFeatured: showFeatured,
+      featured: featuredValue as 'Featured' | 'NotFeatured' | 'All',
     },
     {
       keepPreviousData: true,
@@ -238,7 +238,7 @@ export default function AdminDashboard() {
   useDidUpdate(() => {
     setCurrentPage(1)
     setPageSize(10)
-  }, [projectStatus, showFeatured])
+  }, [projectStatus, featuredValue])
 
   const rows = data?.projects?.map(project => (
     <tr key={project.id}>
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
   ) : (
     <tr>
       <td
-        colSpan={7}
+        colSpan={8}
         height={200}
       >
         <Center>No data</Center>
@@ -287,32 +287,42 @@ export default function AdminDashboard() {
         <title>Kiosk - Admin</title>
       </Head>
       <h1>Admin Dashboard</h1>
-      <Group
-        mb={'md'}
-        position={'apart'}
-        align={'flex-end'}
+      <Checkbox.Group
+        value={projectStatus}
+        label={'Status'}
+        onChange={value => setProjectStatus(value as ProjectStatus[])}
       >
-        <Checkbox.Group
-          value={projectStatus}
-          label={'Status'}
-          onChange={value => setProjectStatus(value as ProjectStatus[])}
-        >
-          <Group>
-            {projectStatusesOptions.map(option => (
-              <Checkbox
-                key={option.value}
-                value={option.value}
-                label={option.label}
-              />
-            ))}
-          </Group>
-        </Checkbox.Group>
-        <Switch
-          label="Show Featured Projects?"
-          checked={showFeatured}
-          onChange={event => setShowFeatured(event.currentTarget.checked)}
-        />
-      </Group>
+        <Group>
+          {projectStatusesOptions.map(option => (
+            <Checkbox
+              key={option.value}
+              value={option.value}
+              label={option.label}
+            />
+          ))}
+        </Group>
+      </Checkbox.Group>
+      <Radio.Group
+        label="Featured Status"
+        my={'md'}
+        value={featuredValue}
+        onChange={setFeaturedValue}
+      >
+        <Group>
+          <Radio
+            value="All"
+            label="All"
+          />
+          <Radio
+            value="Featured"
+            label="Featured"
+          />
+          <Radio
+            value="NotFeatured"
+            label="Not Featured"
+          />
+        </Group>
+      </Radio.Group>
       <Table
         striped
         sx={{ position: 'relative' }}

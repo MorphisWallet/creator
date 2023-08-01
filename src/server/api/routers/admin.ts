@@ -1,7 +1,7 @@
 import { adminProcedure, createTRPCRouter } from '@/server/api/trpc'
 import { z } from 'zod'
 import { prisma } from '@/server/db'
-import { ProjectStatus } from '@prisma/client'
+import { ProjectStatus, type Prisma } from '@prisma/client'
 
 export const adminRouter = createTRPCRouter({
   listProjects: adminProcedure
@@ -10,28 +10,29 @@ export const adminRouter = createTRPCRouter({
         skip: z.number().default(0).optional(),
         take: z.number().default(10).optional(),
         status: z.array(z.nativeEnum(ProjectStatus)),
-        isFeatured: z.boolean(),
+        featured: z.enum(['Featured', 'NotFeatured', 'All']),
       })
     )
     .query(async ({ input }) => {
-      const count = await prisma.project.count({
-        where: {
-          status: {
-            in: input.status,
-          },
-          isFeatured: input.isFeatured,
+      const where: Prisma.ProjectWhereInput = {
+        status: {
+          in: input.status,
         },
+      }
+      if (input.featured === 'Featured') {
+        where.isFeatured = true
+      } else if (input.featured === 'NotFeatured') {
+        where.isFeatured = false
+      }
+
+      const count = await prisma.project.count({
+        where: where,
       })
       const projects = await prisma.project.findMany({
-        where: {
-          status: {
-            in: input.status,
-          },
-          isFeatured: input.isFeatured,
-        },
+        where: where,
         orderBy: [
           {
-            createdAt: 'desc',
+            updatedAt: 'desc',
           },
         ],
         skip: input?.skip,
