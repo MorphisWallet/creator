@@ -15,6 +15,7 @@ import '@rainbow-me/rainbowkit/styles.css'
 import { Notifications } from '@mantine/notifications'
 import { type GetSiweMessageOptions, RainbowKitSiweNextAuthProvider } from '@/providers/RainbowKitSiweNextAuthProvider'
 import { env } from '@/env.mjs'
+import localFont from 'next/font/local'
 
 const { chains, publicClient } = configureChains(
   [mainnet, polygon, bsc],
@@ -37,6 +38,19 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: 'Sign in to Kiosk Creator',
 })
 
+const cera = localFont({
+  src: [
+    {
+      path: '../assets/fonts/Cera-Variable.woff2',
+      style: 'normal',
+    },
+    {
+      path: '../assets/fonts/Cera-Variable-Italic.woff2',
+      style: 'italic',
+    },
+  ],
+})
+
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
     <WagmiConfig config={wagmiConfig}>
@@ -45,6 +59,26 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
           withGlobalStyles
           withNormalizeCSS
           emotionCache={emotionCache}
+          theme={{
+            colorScheme: 'dark',
+            colors: {
+              dark: ['#d5d7e0', '#acaebf', '#8c8fa3', '#666980', '#4d4f66', '#34354a', '#2b2c3d', '#141414', '#1A1A1A', '#01010a'],
+            },
+            fontFamily: `${cera.style.fontFamily}, sans-serif`,
+            components: {
+              Container: {
+                defaultProps: {
+                  sizes: {
+                    xs: 540,
+                    sm: 720,
+                    md: 960,
+                    lg: 1074,
+                    xl: 1440,
+                  },
+                },
+              },
+            },
+          }}
         >
           <ModalsProvider>
             <Notifications position="top-right" />
