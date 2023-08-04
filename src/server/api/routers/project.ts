@@ -27,9 +27,6 @@ export const projectRouter = createTRPCRouter({
   createOrUpdate: protectedProcedure.input(projectCreateOrUpdateSchema).mutation(async ({ input, ctx }) => {
     const { user } = ctx.session
     const isAdmin = user.role === 'Admin'
-    if (!user.twitter.username) {
-      throw new Error('User must have verified Twitter account to create project')
-    }
 
     if (input.id) {
       const project = await prisma.project.findUniqueOrThrow({
