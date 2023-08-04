@@ -33,9 +33,8 @@ export default withSentryConfig(
 
     // Suppresses source map uploading logs during build
     silent: true,
-
-    org: 'test-mmg',
-    project: 'javascript-nextjs',
+    org: 'morphis-max',
+    project: 'kiosk-creator',
   },
   {
     // For all available options, see:
