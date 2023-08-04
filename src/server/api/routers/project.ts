@@ -5,6 +5,8 @@ import { projectCreateOrUpdateSchema } from '@/schemas/project'
 import { z } from 'zod'
 import { type Project } from '@prisma/client'
 
+const MAX_PROJECTS_FOR_USER = 10
+
 export const projectRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
     const { user } = ctx.session
@@ -27,6 +29,16 @@ export const projectRouter = createTRPCRouter({
   createOrUpdate: protectedProcedure.input(projectCreateOrUpdateSchema).mutation(async ({ input, ctx }) => {
     const { user } = ctx.session
     const isAdmin = user.role === 'Admin'
+
+    const userProjects = await prisma.project.count({
+      where: {
+        userId: user.id,
+      },
+    })
+
+    if (userProjects >= MAX_PROJECTS_FOR_USER && !isAdmin) {
+      throw new Error('User has reached max number of projects')
+    }
 
     if (input.id) {
       const project = await prisma.project.findUniqueOrThrow({
