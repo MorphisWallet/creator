@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, Container, Group } from '@mantine/core'
+import { UserDropdown } from '@/components/layout/UserDropdown'
 
 type Props = {
   children: React.ReactNode
@@ -139,6 +140,7 @@ export const Layout = ({ children }: Props) => {
         >
           <Group position={'apart'}>
             <Logo />
+            <UserDropdown />
           </Group>
         </Container>
       </Box>

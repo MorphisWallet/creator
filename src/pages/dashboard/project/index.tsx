@@ -1,23 +1,95 @@
-import { DashboardLayout } from '@/components/layout/DashboardLayout'
-import { Box, Button, Space } from '@mantine/core'
+import { type GetServerSideProps } from 'next'
+import { getSession } from 'next-auth/react'
+import { Box, Button, SimpleGrid, Text } from '@mantine/core'
 import Head from 'next/head'
-import { ProjectList } from '@/components/project/ProjectList'
-import { useRouter } from 'next/router'
+import { Layout } from '@/components/layout/Layout'
+import { prisma } from '@/server/db'
+import { type Project } from '@prisma/client'
+import Link from 'next/link'
+import { ProjectCard } from '@/components/project/ProjectCard'
 
-export default function Project() {
-  const { push } = useRouter()
+type Props = {
+  projects: Project[]
+}
 
+export const getServerSideProps: GetServerSideProps<Props> = async context => {
+  const session = await getSession(context)
+  const userId = session?.user?.id
+  if (!userId) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
+  const projects = await prisma.project.findMany({
+    where: {
+      userId,
+    },
+  })
+
+  return {
+    props: {
+      projects,
+    },
+  }
+}
+
+export default function Project({ projects }: Props) {
   return (
-    <DashboardLayout>
+    <Layout>
       <Head>
         <title>Kiosk - Projects</title>
       </Head>
-      <h1>Project</h1>
+      <Text
+        size={42}
+        fw={700}
+        mt={50}
+        color={'white.1'}
+      >
+        My Projects
+      </Text>
+      <Text
+        size={'lg'}
+        mb={44}
+        color={'white.1'}
+      >
+        Create, curate, and manage your ERC6551 projects information.
+      </Text>
       <Box>
-        <Button onClick={() => void push('/dashboard/project/new')}>Create new project</Button>
-        <Space h={'md'} />
-        <ProjectList />
+        <Link href={'/dashboard/project/new'}>
+          <Button
+            color={'red'}
+            h={53}
+            radius={20}
+            w={196}
+            sx={{
+              backgroundColor: '#ED3733',
+            }}
+          >
+            <Text
+              fw={700}
+              size={'md'}
+              color={'white.0'}
+            >
+              Create new project
+            </Text>
+          </Button>
+        </Link>
+        <SimpleGrid
+          cols={3}
+          mt={44}
+        >
+          {projects.map(project => (
+            <ProjectCard
+              project={project}
+              key={project.id}
+            />
+          ))}
+        </SimpleGrid>
       </Box>
-    </DashboardLayout>
+    </Layout>
   )
 }

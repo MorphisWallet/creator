@@ -63,6 +63,7 @@ const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { s
             colorScheme: 'dark',
             colors: {
               dark: ['#d5d7e0', '#acaebf', '#8c8fa3', '#666980', '#4d4f66', '#34354a', '#2b2c3d', '#141414', '#1A1A1A', '#01010a'],
+              white: ['#FFFFFF', '#E6E6E6'],
             },
             fontFamily: `${cera.style.fontFamily}, sans-serif`,
             components: {
