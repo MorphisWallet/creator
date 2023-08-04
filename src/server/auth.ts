@@ -242,6 +242,7 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
             address: walletAddress,
             name: walletAddress,
             role: role,
+            email: walletAddress,
           },
         })
         await prisma.account.create({
