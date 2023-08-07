@@ -28,6 +28,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
     where: {
       userId,
     },
+    orderBy: [
+      {
+        createdAt: 'desc',
+      },
+    ],
   })
 
   return {
@@ -81,6 +86,7 @@ export default function Project({ projects }: Props) {
         <SimpleGrid
           cols={3}
           mt={44}
+          pb={40}
         >
           {projects.map(project => (
             <ProjectCard

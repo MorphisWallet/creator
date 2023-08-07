@@ -1,13 +1,11 @@
-import { useRouter } from 'next/router'
-import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import Head from 'next/head'
-import { ActionIcon, Group } from '@mantine/core'
-import { IconArrowLeft } from '@tabler/icons-react'
-import { ProjectForm } from '@/components/project/ProjectForm'
 import { type Project } from '@prisma/client'
 import { type GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
 import { prisma } from '@/server/db'
+import { ProjectForm } from '@/components/project/ProjectForm'
+import React from 'react'
+import { Layout } from '@/components/layout/Layout'
 
 type Props = {
   project: Project
@@ -47,34 +45,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
 }
 
 export default function ProjectEdit({ project }: Props) {
-  const isPublished = project.status === 'Published'
-  const { push } = useRouter()
-  const name = project.name
-
-  const goBack = () => {
-    if (isPublished) {
-      void push(`/dashboard/project/${project.id}`)
-    } else {
-      void push('/dashboard/project')
-    }
-  }
+  const title = `Kiosk - ${project.name}`
 
   return (
-    <DashboardLayout>
+    <Layout>
       <Head>
-        <title>Kiosk - {name}</title>
+        <title>{title}</title>
       </Head>
-      <Group>
-        <ActionIcon
-          variant="outline"
-          radius="xl"
-          onClick={() => void goBack()}
-        >
-          <IconArrowLeft size="1rem" />
-        </ActionIcon>
-        <h1>Edit {name}</h1>
-      </Group>
       <ProjectForm project={project} />
-    </DashboardLayout>
+    </Layout>
   )
 }

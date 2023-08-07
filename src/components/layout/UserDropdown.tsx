@@ -79,6 +79,11 @@ export const UserDropdown = () => {
         <Link href={'/dashboard/settings'}>
           <Menu.Item>Setting</Menu.Item>
         </Link>
+        {data.user?.role === 'Admin' && (
+          <Link href={'/dashboard/admin'}>
+            <Menu.Item>Admin</Menu.Item>
+          </Link>
+        )}
         <Menu.Item
           onClick={() => {
             void signOut({

@@ -1,112 +1,98 @@
-import {
-  Button,
-  Card,
-  Group,
-  Select,
-  Stack,
-  Textarea,
-  TextInput,
-  Text,
-  Box,
-  Checkbox,
-  Radio,
-  Modal,
-  Image,
-  SimpleGrid,
-  Center,
-} from '@mantine/core'
-import { BannerImage } from '@/components/project/BannerImage'
-import { useForm } from '@mantine/form'
+import { type Project, ProjectStatus } from '@prisma/client'
+import { Box, Button, Group, Text } from '@mantine/core'
+import { ProjectReviewAlert } from '@/components/project/ProjectReviewAlert'
+import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { ProjectDetailForm } from '@/components/project/ProjectDetailForm'
+import { ProjectLinksForm } from '@/components/project/ProjectLinksForm'
+import { ProjectGraphicsForm } from '@/components/project/ProjectGraphicsForm'
+import { useSession } from 'next-auth/react'
 import { api } from '@/utils/api'
 import { notifications } from '@mantine/notifications'
-import { useRouter } from 'next/router'
-import { projectCreateOrUpdateSchema, type ProjectCreateOrUpdateSchemaType } from '@/schemas'
-import { modals } from '@mantine/modals'
-import { ProjectBlockchain, type Project, ProjectStage, ProjectStatus, Category } from '@prisma/client'
-import { LogoUpload } from '@/components/project/LogoUpload'
-import { PreviewImage } from '@/components/project/PreviewImage'
-import { pascalToNormal } from '@/utils/string'
-import { ProjectPreview } from '@/components/project/ProjectPreview'
-import { useSession } from 'next-auth/react'
 import { useDisclosure } from '@mantine/hooks'
-import { ProjectStatusBadge } from '@/components/project/ProjectStatusBadge'
+import { projectCreateOrUpdateSchema, type ProjectCreateOrUpdateSchemaType } from '@/schemas'
+import { useProjectFormStore } from '@/store'
+import { modals } from '@mantine/modals'
+
+type TabProps = {
+  label: string
+  active: boolean
+  onClick: () => void
+}
+
+const Tab = ({ label, onClick, active }: TabProps) => {
+  return (
+    <Box
+      onClick={onClick}
+      sx={{
+        cursor: 'pointer',
+        backgroundColor: active ? '#2F2F2F' : 'transparent',
+        borderRadius: 12,
+      }}
+      py={11}
+      px={16}
+    >
+      <Text
+        size={16}
+        color={'white.1'}
+        fw={700}
+      >
+        {label}
+      </Text>
+    </Box>
+  )
+}
 
 type Props = {
   project?: Project
 }
 
-type FormValues = {
-  blockchain: ProjectBlockchain
-  name: string
-  logoUrl: string
-  description: string
-  website: string
-  twitter: string
-  discord: string
-  bannerImage: string
-  previewImages: string[]
-  projectStage: ProjectStage
-  categories: Category[]
-}
-
 export const ProjectForm = ({ project }: Props) => {
   const { data } = useSession()
   const [isOpened, handler] = useDisclosure(false)
+  const { push } = useRouter()
   const isAdmin = data?.user?.role === 'Admin'
-  const isPublished = project?.status === 'Published'
-  const projectBlockchain = Object.values(ProjectBlockchain)
-  const categories = Object.values(Category)
-  const form = useForm<FormValues>({
-    initialValues: {
-      name: project?.name ?? '',
-      description: project?.description ?? '',
-      blockchain: project?.blockchain ?? 'Ethereum',
-      bannerImage: project?.bannerImage ?? '',
-      logoUrl: project?.logoUrl ?? '',
-      projectStage: project?.projectStage ?? 'Mainnet',
-      previewImages: project?.previewImages ?? [],
-      twitter: project?.twitter ?? '',
-      website: project?.website ?? '',
-      discord: project?.discord ?? '',
-      categories: project?.categories ?? [],
-    },
-    validate: {
-      name: value => {
-        if (!value) {
-          return 'Name is required'
-        }
-        if (value.length > 50) {
-          return 'Name must not exceed 50 characters'
-        }
-        return null
-      },
-      description: value => {
-        if (!value) {
-          return 'Description is required'
-        }
-        if (value.length > 500) {
-          return 'Description must not exceed 500 characters'
-        }
-      },
-      blockchain: value => (!projectBlockchain.includes(value) ? 'Please select a blockchain' : null),
-      categories: value => (!value.length ? 'Please select at least one category' : null),
-    },
-  })
+  const isPublishedOrInReview = project?.status === 'Published' || project?.status === 'InReview'
 
-  const blockchainSelectData = projectBlockchain.map(blockchain => ({
-    value: blockchain,
-    label: blockchain,
-  }))
+  const goToProject = () => {
+    void push('/dashboard/project')
+  }
 
-  const categoriesSelectData = categories.map(category => ({
-    value: category,
-    label: category,
-  }))
+  const goToDetails = (id: string) => {
+    void push(`/dashboard/project/${id}`)
+  }
 
-  const projectStageSelectData = Object.values(ProjectStage).map(stage => ({
-    value: stage,
-    label: pascalToNormal(stage),
-  }))
+  const goBack = () => {
+    if (isPublishedOrInReview) {
+      goToDetails(project?.id)
+    } else {
+      goToProject()
+    }
+  }
+
+  const [activeTab, setActiveTab] = useState('Details')
+
+  const getTitle = () => {
+    switch (activeTab) {
+      case 'Details':
+        return 'Project details'
+      case 'Links':
+        return 'Project links'
+      case 'Graphics':
+        return 'Project graphics'
+    }
+  }
+
+  const getForm = () => {
+    switch (activeTab) {
+      case 'Details':
+        return <ProjectDetailForm isDisabled={isPublishedOrInReview} />
+      case 'Links':
+        return <ProjectLinksForm isDisabled={isPublishedOrInReview} />
+      case 'Graphics':
+        return <ProjectGraphicsForm isDisabled={isPublishedOrInReview} />
+    }
+  }
 
   const {
     mutate,
@@ -120,7 +106,7 @@ export const ProjectForm = ({ project }: Props) => {
         color: 'red',
       })
     },
-    onSuccess: () => {
+    onSuccess: data => {
       notifications.show({
         title: 'Success',
         message: 'Project saved successfully',
@@ -129,31 +115,51 @@ export const ProjectForm = ({ project }: Props) => {
       if (isAdmin) {
         void goBack()
       } else {
-        handler.open()
+        if (data.project.status === 'InReview') {
+          handler.open()
+        } else {
+          void goToProject()
+        }
       }
     },
   })
 
-  const { push } = useRouter()
+  const {
+    projectStage,
+    logoUrl,
+    bannerImage,
+    previewImages,
+    discord,
+    twitter,
+    website,
+    description,
+    categories,
+    blockchain,
+    name,
+    reset,
+    updateField,
+  } = useProjectFormStore()
 
-  const goToProject = () => {
-    void push('/dashboard/project')
-  }
-
-  const goToDetails = (id: string) => {
-    void push(`/dashboard/project/${id}`)
-  }
-
-  const goBack = () => {
-    if (isPublished) {
-      goToDetails(project?.id)
-    } else {
-      goToProject()
+  useEffect(() => {
+    reset()
+    if (project) {
+      updateField('projectStage', project.projectStage)
+      updateField('logoUrl', project.logoUrl)
+      updateField('bannerImage', project.bannerImage)
+      updateField('previewImages', project.previewImages)
+      updateField('discord', project.discord ?? '')
+      updateField('twitter', project.twitter ?? '')
+      updateField('website', project.website ?? '')
+      updateField('description', project.description)
+      updateField('categories', project.categories)
+      updateField('blockchain', project.blockchain)
+      updateField('name', project.name)
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  const createOrUpdateProject = (data: Partial<ProjectCreateOrUpdateSchemaType>) => {
-    if (data?.bannerImage === '') {
+  const createOrUpdateProject = (status: ProjectStatus) => {
+    if (bannerImage === '') {
       return notifications.show({
         title: 'Error',
         color: 'red',
@@ -161,7 +167,7 @@ export const ProjectForm = ({ project }: Props) => {
       })
     }
 
-    if (data?.previewImages?.length === 0) {
+    if (previewImages.length === 0) {
       return notifications.show({
         title: 'Error',
         color: 'red',
@@ -169,7 +175,7 @@ export const ProjectForm = ({ project }: Props) => {
       })
     }
 
-    if (data?.logoUrl === '') {
+    if (logoUrl === '') {
       return notifications.show({
         title: 'Error',
         color: 'red',
@@ -177,8 +183,42 @@ export const ProjectForm = ({ project }: Props) => {
       })
     }
 
-    const resultToParse = {
-      ...data,
+    if (categories.length === 0) {
+      return notifications.show({
+        title: 'Error',
+        color: 'red',
+        message: 'Category is required',
+      })
+    }
+
+    if (name === '') {
+      return notifications.show({
+        title: 'Error',
+        color: 'red',
+        message: 'Project name is required',
+      })
+    }
+    if (description === '') {
+      return notifications.show({
+        title: 'Error',
+        color: 'red',
+        message: 'Project description is required',
+      })
+    }
+
+    const resultToParse: Partial<ProjectCreateOrUpdateSchemaType> = {
+      projectStage,
+      logoUrl,
+      bannerImage,
+      previewImages,
+      discord,
+      twitter,
+      website,
+      description,
+      categories,
+      blockchain,
+      name,
+      status,
     }
 
     if (project?.id) {
@@ -189,262 +229,137 @@ export const ProjectForm = ({ project }: Props) => {
     mutate(zodResult)
   }
 
+  const submitProject = () => {
+    const status = isAdmin ? ProjectStatus.Published : ProjectStatus.InReview
+    createOrUpdateProject(status)
+  }
+
   const openModal = () =>
     modals.openConfirmModal({
       title: 'Save your changes?',
       labels: { confirm: 'Save as draft', cancel: 'Discard changes' },
       onCancel: () => void goBack(),
       onConfirm: () => {
-        const { hasErrors } = form.validate()
-        if (!hasErrors) {
-          createOrUpdateProject({
-            ...form.values,
-            status: ProjectStatus.Draft,
-          })
-        }
+        createOrUpdateProject(ProjectStatus.Draft)
       },
     })
 
   return (
-    <Group align="flex-start">
-      <Box sx={{ flex: 1 }}>
-        <form
-          onSubmit={form.onSubmit(values => {
-            const status = isAdmin ? ProjectStatus.Published : ProjectStatus.InReview
-            createOrUpdateProject({
-              ...values,
-              status,
-            })
-          })}
+    <>
+      <Group
+        spacing={0}
+        align={'start'}
+      >
+        <Box
+          sx={{
+            borderRight: '1px solid #2F2F2F',
+            alignSelf: 'stretch',
+            minHeight: 'calc(100vh - 94px)',
+          }}
+          w={300}
+          pr={16}
         >
-          <Stack>
-            <Card
-              padding="lg"
-              radius="md"
-              withBorder
+          <Group
+            spacing={0}
+            pt={40}
+            mb={27}
+            sx={{
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              if (isPublishedOrInReview) {
+                goBack()
+              } else {
+                openModal()
+              }
+            }}
+          >
+            <svg
+              width="19"
+              height="12"
+              viewBox="0 0 19 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <Text
-                size={'xl'}
-                mb={'md'}
-              >
-                About the project 🔥
-              </Text>
-              <Stack>
-                <Select
-                  label="Blockchain"
-                  required
-                  data={blockchainSelectData}
-                  {...form.getInputProps('blockchain')}
-                  disabled={isPublished}
-                />
-                <TextInput
-                  label="Name of the Project"
-                  placeholder="Name of the project"
-                  required
-                  {...form.getInputProps('name')}
-                  disabled={isPublished}
-                />
-                <Checkbox.Group
-                  label="Categories"
-                  {...form.getInputProps('categories')}
-                  required
-                >
-                  <Group>
-                    {categoriesSelectData.map(category => (
-                      <Checkbox
-                        key={category.value}
-                        value={category.value}
-                        label={category.label}
-                        disabled={isPublished}
-                      />
-                    ))}
-                  </Group>
-                </Checkbox.Group>
-                <Radio.Group
-                  label="Project Stage"
-                  required
-                  {...form.getInputProps('projectStage')}
-                >
-                  <Group>
-                    {projectStageSelectData.map(stage => (
-                      <Radio
-                        key={stage.value}
-                        value={stage.value}
-                        label={stage.label}
-                      />
-                    ))}
-                  </Group>
-                </Radio.Group>
-                <Textarea
-                  label="Description"
-                  placeholder="The description of the project"
-                  required
-                  {...form.getInputProps('description')}
-                  minRows={8}
-                />
-              </Stack>
-            </Card>
-            <Card
-              padding="lg"
-              radius="md"
-              withBorder
+              <path
+                d="M17 1V5H3.83L7.41 1.41L6 0L0 6L6 12L7.41 10.58L3.83 7H19V1H17Z"
+                fill="#E6E6E6"
+              />
+            </svg>
+            <Text
+              color={'white.1'}
+              ml={'md'}
+              fw={700}
+              size={'md'}
             >
-              <Text
-                size={'xl'}
-                mb={'md'}
-              >
-                Links 🍀
-              </Text>
-              <Stack>
-                <TextInput
-                  label="Twitter"
-                  placeholder="Project twitter url"
-                  {...form.getInputProps('twitter')}
-                  disabled={isPublished}
-                />
-                <TextInput
-                  label="Discord"
-                  placeholder="Project discord url"
-                  {...form.getInputProps('discord')}
-                  disabled={isPublished}
-                />
-                <TextInput
-                  label="Website"
-                  placeholder="Project website url"
-                  {...form.getInputProps('website')}
-                  disabled={isPublished}
-                />
-              </Stack>
-            </Card>
-            <Card
-              padding="lg"
-              radius="md"
-              withBorder
+              My collections
+            </Text>
+          </Group>
+          <Tab
+            label={'Details'}
+            onClick={() => setActiveTab('Details')}
+            active={activeTab === 'Details'}
+          />
+          <Tab
+            label={'Links'}
+            onClick={() => setActiveTab('Links')}
+            active={activeTab === 'Links'}
+          />
+          <Tab
+            label={'Graphics'}
+            onClick={() => setActiveTab('Graphics')}
+            active={activeTab === 'Graphics'}
+          />
+        </Box>
+        <Box
+          pt={40}
+          sx={{ flex: 1 }}
+        >
+          <Text
+            color={'white.1'}
+            size={32}
+            fw={700}
+            ml={64}
+          >
+            {getTitle()}
+          </Text>
+          <Box
+            ml={16}
+            mt={34}
+          >
+            {getForm()}
+            <Group
+              mt={34}
+              position={'right'}
+              pb={32}
             >
-              <Text
-                size={'xl'}
-                mb={'md'}
-              >
-                Profile 💌
-              </Text>
-              <Stack>
-                <LogoUpload
-                  initialImageUrl={form.values.logoUrl}
-                  onImageUrlChange={url => form.setFieldValue('logoUrl', url)}
-                  disabled={isPublished}
-                />
-                <BannerImage
-                  initialImageUrl={form.values.bannerImage}
-                  onImageUrlChange={url => form.setFieldValue('bannerImage', url)}
-                />
-                <PreviewImage
-                  initialImageUrls={form.values.previewImages}
-                  onImageUrlChange={url => form.setFieldValue('previewImages', url)}
-                />
-              </Stack>
-            </Card>
-            <Group>
               <Button
-                onClick={() => {
-                  if (isPublished) {
-                    goBack()
-                  } else {
-                    openModal()
-                  }
-                }}
-                variant={'outline'}
-                size={'md'}
-                miw={200}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
                 loading={isLoading}
-                size={'md'}
-                miw={200}
+                sx={{
+                  backgroundColor: '#ED3733',
+                  borderRadius: 12,
+                  fontWeight: 700,
+                  fontSize: 16,
+                  padding: '9px 20px',
+                  height: 40,
+                }}
+                color={'red'}
+                onClick={submitProject}
               >
-                Submit
+                Submit for Review
               </Button>
             </Group>
-          </Stack>
-        </form>
-      </Box>
-      <Box w={600}>
-        <ProjectPreview
-          bannerImage={form.values.bannerImage}
-          previewImages={form.values.previewImages}
-          name={form.values.name}
-          logoUrl={form.values.logoUrl}
-        />
-      </Box>
-      <Modal
+          </Box>
+        </Box>
+      </Group>
+      <ProjectReviewAlert
         opened={isOpened}
         onClose={handler.close}
-        size={'xl'}
-        withCloseButton={false}
-        closeOnEscape={false}
-        closeOnClickOutside={false}
-      >
-        <Image
-          src={form.values.bannerImage}
-          height={280}
-          fit={'cover'}
-          alt={'Project banner image'}
-          withPlaceholder
-          mt={'md'}
-        />
-        <Image
-          src={form.values.logoUrl}
-          height={94}
-          width={94}
-          alt={'logo'}
-          radius={'50%'}
-          withPlaceholder
-          mx={'auto'}
-          sx={{ position: 'relative', top: -42 }}
-        />
-        <Center>
-          <ProjectStatusBadge status={'InReview'} />
-        </Center>
-        <Text
-          size={'xl'}
-          fw={'bold'}
-          mt={'xl'}
-          align={'center'}
-        >
-          {form.values.name} has been submitted for review
-        </Text>
-        <Text
-          color={'dimmed'}
-          mb={'xl'}
-          align={'center'}
-        >
-          It will be published after we review it
-        </Text>
-        <SimpleGrid
-          cols={2}
-          spacing="lg"
-        >
-          <Button
-            color={'dark'}
-            radius={'xl'}
-            w={'100%'}
-            onClick={goToProject}
-          >
-            My products
-          </Button>
-          <Button
-            variant={'outline'}
-            color={'dark'}
-            radius={'xl'}
-            w={'100%'}
-            onClick={() => goToDetails(projectData?.project?.id ?? '')}
-          >
-            See preview
-          </Button>
-        </SimpleGrid>
-      </Modal>
-    </Group>
+        logo={logoUrl}
+        banner={bannerImage}
+        id={projectData?.project.id ?? ''}
+        name={name}
+      />
+    </>
   )
 }

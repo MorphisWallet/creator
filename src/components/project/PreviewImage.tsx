@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { Dropzone, type DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useUploadImage } from '@/hooks/useUploadImage'
 import { useDidUpdate } from '@mantine/hooks'
-import { ActionIcon, Box, Center, Group, Image, SimpleGrid, Space, Stack, Text } from '@mantine/core'
-import { IconX } from '@tabler/icons-react'
+import { Box, Center, Image, SimpleGrid, Stack, Text } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { DropZoneStateIcon } from '@/components/project/DropZoneStateIcon'
+import { CloseButton } from '@/components/project/CloseButton'
 
 type Props = {
   onImageUrlChange: (url: string[]) => void
@@ -41,23 +41,6 @@ export const PreviewImage = ({ onImageUrlChange, initialImageUrls }: Props) => {
 
   return (
     <Box>
-      <Group position={'apart'}>
-        <Text
-          fw={500}
-          size="sm"
-          mb={4}
-        >
-          Preview image
-        </Text>
-        <Text
-          fw={500}
-          size="sm"
-          mb={4}
-          color={'dimmed'}
-        >
-          {imageUrls.length} / 10
-        </Text>
-      </Group>
       <Dropzone
         onDrop={onDrop}
         onReject={files => {
@@ -78,6 +61,7 @@ export const PreviewImage = ({ onImageUrlChange, initialImageUrls }: Props) => {
           alignItems: 'center',
           justifyContent: 'center',
           height: 420,
+          borderRadius: 16,
         }}
         loading={loading}
       >
@@ -85,18 +69,18 @@ export const PreviewImage = ({ onImageUrlChange, initialImageUrls }: Props) => {
           <DropZoneStateIcon />
           <Box>
             <Center>
-              <Text color={'dimmed'}>1400 x 420 recommended</Text>
+              <Text color={'dimmed'}>200 x 200 recommended</Text>
             </Center>
             <Center>
-              <Text color={'dimmed'}>One Image minimum</Text>
+              <Text color={'dimmed'}>You must upload at least one image</Text>
             </Center>
           </Box>
         </Stack>
       </Dropzone>
-      <Space h={'md'} />
       <SimpleGrid
         cols={3}
-        spacing="lg"
+        spacing={8}
+        mt={8}
       >
         {imageUrls.map((url, index) => (
           <Box
@@ -113,14 +97,9 @@ export const PreviewImage = ({ onImageUrlChange, initialImageUrls }: Props) => {
               fit="cover"
               height={200}
               width={'100%'}
-              radius={'md'}
+              radius={16}
             />
-            <ActionIcon
-              sx={{ position: 'absolute', right: '1rem', top: '1rem' }}
-              onClick={() => removeImage(url)}
-            >
-              <IconX />
-            </ActionIcon>
+            <CloseButton onClick={() => removeImage(url)} />
           </Box>
         ))}
       </SimpleGrid>

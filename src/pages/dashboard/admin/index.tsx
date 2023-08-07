@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { api } from '@/utils/api'
 import {
   Button,
@@ -27,6 +26,7 @@ import { getSession } from 'next-auth/react'
 import { ProjectStatus } from '@prisma/client'
 import { pascalToNormal } from '@/utils/string'
 import { modals } from '@mantine/modals'
+import { Layout } from '@/components/layout/Layout'
 
 export const getServerSideProps: GetServerSideProps = async context => {
   const session = await getSession(context)
@@ -282,7 +282,7 @@ export default function AdminDashboard() {
   )
 
   return (
-    <DashboardLayout>
+    <Layout>
       <Head>
         <title>Kiosk - Admin</title>
       </Head>
@@ -337,8 +337,8 @@ export default function AdminDashboard() {
             <th>Name</th>
             <th>Logo</th>
             <th>Status</th>
-            <th>Is Featured?</th>
-            <th>View Count</th>
+            <th>Featured?</th>
+            <th>View</th>
             <th>Created At</th>
             <th>Actions</th>
           </tr>
@@ -366,6 +366,6 @@ export default function AdminDashboard() {
           </Group>
         </Group>
       ) : null}
-    </DashboardLayout>
+    </Layout>
   )
 }

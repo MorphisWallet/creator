@@ -51,8 +51,8 @@ dependencies:
     specifier: ^5.1.1
     version: 5.1.1(prisma@5.0.0)
   '@rainbow-me/rainbowkit':
-    specifier: ^1.0.7
-    version: 1.0.7(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(viem@0.3.40)(wagmi@1.0.9)
+    specifier: ^1.0.8
+    version: 1.0.8(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(viem@0.3.40)(wagmi@1.0.9)
   '@sentry/nextjs':
     specifier: ^7.61.0
     version: 7.61.0(next@13.4.12)(react@18.2.0)
@@ -2405,8 +2405,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@rainbow-me/rainbowkit@1.0.7(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(viem@0.3.40)(wagmi@1.0.9):
-    resolution: {integrity: sha512-cZZgPqpkeQEmKX5As3+WnKFF7PejDFVbc4bF9t6zC52nMFjSQUAnv2AttzyR4sP4pp2BSE1nVpTvygZGJ4f1Xg==}
+  /@rainbow-me/rainbowkit@1.0.8(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(viem@0.3.40)(wagmi@1.0.9):
+    resolution: {integrity: sha512-m1B9/X3p8MLmj4fDfs2NpJlFRmKz7vOR0jmcdBw2SMFzXqP1FQFQc4pjvtLEeyfEUGSNNceGrecFZRVS0Qk//A==}
     engines: {node: '>=12.4'}
     peerDependencies:
       react: '>=17'

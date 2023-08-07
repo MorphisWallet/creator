@@ -1,9 +1,11 @@
 import React from 'react'
 import { Box, Container, Group } from '@mantine/core'
 import { UserDropdown } from '@/components/layout/UserDropdown'
+import Link from 'next/link'
 
 type Props = {
   children: React.ReactNode
+  fullWidth?: boolean
 }
 
 const Logo = () => {
@@ -123,7 +125,7 @@ const Logo = () => {
   )
 }
 
-export const Layout = ({ children }: Props) => {
+export const Layout = ({ children, fullWidth }: Props) => {
   return (
     <Box>
       <Box
@@ -137,15 +139,21 @@ export const Layout = ({ children }: Props) => {
         <Container
           size={'lg'}
           w={'100%'}
+          px={0}
         >
           <Group position={'apart'}>
-            <Logo />
+            <Link href={'/'}>
+              <Logo />
+            </Link>
             <UserDropdown />
           </Group>
         </Container>
       </Box>
-      <Container size={'lg'}>
-        <Box pb={80}>{children}</Box>
+      <Container
+        size={fullWidth ? 'full' : 'lg'}
+        px={0}
+      >
+        <Box>{children}</Box>
       </Container>
     </Box>
   )
