@@ -295,34 +295,36 @@ export default function ProjectDetailPage({ project }: Props) {
           <TwitterLink link={project.twitter} />
           <DiscordLink link={project.discord} />
         </Group>
-        <Carousel
-          mx="auto"
-          mt={64}
-          withIndicators={false}
-          height={480}
-          mb={93}
-          slideGap="md"
-          slideSize="640px"
-          align="start"
-          dragFree
-          withControls={false}
-          containScroll={'trimSnaps'}
-          sx={{
-            cursor: 'grab',
-          }}
-        >
-          {project.previewImages.map((image, index) => (
-            <Carousel.Slide key={index}>
-              <Image
-                src={image}
-                height={480}
-                fit={'cover'}
-                alt={projectName}
-                radius={16}
-              />
-            </Carousel.Slide>
-          ))}
-        </Carousel>
+        {project.previewImages.length > 1 && (
+          <Carousel
+            mx="auto"
+            mt={64}
+            withIndicators={false}
+            height={480}
+            mb={93}
+            slideGap="md"
+            slideSize="640px"
+            align="start"
+            dragFree
+            withControls={false}
+            containScroll={'trimSnaps'}
+            sx={{
+              cursor: 'grab',
+            }}
+          >
+            {project.previewImages.map((image, index) => (
+              <Carousel.Slide key={index}>
+                <Image
+                  src={image}
+                  height={480}
+                  fit={'cover'}
+                  alt={projectName}
+                  radius={16}
+                />
+              </Carousel.Slide>
+            ))}
+          </Carousel>
+        )}
         <Box
           sx={{
             borderBottom: '1px solid #303134',

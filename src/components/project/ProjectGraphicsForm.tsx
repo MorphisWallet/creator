@@ -38,10 +38,7 @@ export const ProjectGraphicsForm = ({ isDisabled }: Props) => {
           />
         </Stack>
         <Stack spacing={8}>
-          <FormTitle
-            label={'Preview image'}
-            required={true}
-          />
+          <FormTitle label={'Preview image'} />
           <PreviewImage
             initialImageUrls={previewImages}
             onImageUrlChange={urls => updateField('previewImages', urls)}

@@ -167,14 +167,6 @@ export const ProjectForm = ({ project }: Props) => {
       })
     }
 
-    if (previewImages.length === 0) {
-      return notifications.show({
-        title: 'Error',
-        color: 'red',
-        message: 'Preview images are required',
-      })
-    }
-
     if (logoUrl === '') {
       return notifications.show({
         title: 'Error',

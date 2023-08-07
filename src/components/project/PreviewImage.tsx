@@ -69,10 +69,7 @@ export const PreviewImage = ({ onImageUrlChange, initialImageUrls }: Props) => {
           <DropZoneStateIcon />
           <Box>
             <Center>
-              <Text color={'dimmed'}>200 x 200 recommended</Text>
-            </Center>
-            <Center>
-              <Text color={'dimmed'}>You must upload at least one image</Text>
+              <Text color={'dimmed'}>640 x 480 recommended</Text>
             </Center>
           </Box>
         </Stack>

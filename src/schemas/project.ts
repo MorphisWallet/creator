@@ -12,7 +12,7 @@ export const projectCreateOrUpdateSchema = z.object({
   twitter: z.string().url().optional().or(z.literal('')),
   discord: z.string().url().optional().or(z.literal('')),
   bannerImage: z.string().url(),
-  previewImages: z.array(z.string().url()).min(1),
+  previewImages: z.array(z.string().url()).min(0),
   projectStage: z.nativeEnum(ProjectStage),
   status: z.nativeEnum(ProjectStatus),
 })
