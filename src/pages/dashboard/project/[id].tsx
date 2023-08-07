@@ -3,9 +3,8 @@ import Head from 'next/head'
 import { ActionIcon, Box, Container, Group, Image, Text } from '@mantine/core'
 import { IconArrowLeft } from '@tabler/icons-react'
 import { type GetServerSideProps } from 'next'
-import { type Project, type Prisma } from '@prisma/client'
+import { type Prisma } from '@prisma/client'
 import { prisma } from '@/server/db'
-import { useSession } from 'next-auth/react'
 import { ProjectStatusBadge } from '@/components/project/ProjectStatusBadge'
 import { ProjectDropdownMenu } from '@/components/project/ProjectDropdownMenu'
 import { Carousel } from '@mantine/carousel'
@@ -17,8 +16,19 @@ import dayjs from 'dayjs'
 import { pascalToNormal } from '@/utils/string'
 import { getServerAuthSession } from '@/server/auth'
 
+async function getProjectWithUser(filter: Prisma.ProjectWhereUniqueInput) {
+  return await prisma.project.findUnique({
+    where: filter,
+    include: {
+      user: true,
+    },
+  })
+}
+
+type ProjectWithUser = Exclude<Prisma.PromiseReturnType<typeof getProjectWithUser>, null>
+
 type Props = {
-  project: Project
+  project: ProjectWithUser
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
@@ -44,9 +54,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   if (session.user.role !== 'Admin') {
     filter['userId'] = session.user.id
   }
-  const project = await prisma.project.findUnique({
-    where: filter,
-  })
+  const project = await getProjectWithUser(filter)
   if (!project) {
     return {
       notFound: true,
@@ -148,8 +156,7 @@ export default function ProjectDetailPage({ project }: Props) {
     return push('/dashboard/project')
   }
 
-  const projectName = project?.name
-  const { data } = useSession()
+  const projectName = project.name
 
   const title = `Kiosk - Project - ${projectName}`
 
@@ -256,7 +263,7 @@ export default function ProjectDetailPage({ project }: Props) {
         >
           <Group spacing={5}>
             <LabelText>By</LabelText>
-            <ValueText>{data?.user?.name}</ValueText>
+            <ValueText>{project.user.name}</ValueText>
           </Group>
           <Group spacing={5}>
             <LabelText>Created</LabelText>
