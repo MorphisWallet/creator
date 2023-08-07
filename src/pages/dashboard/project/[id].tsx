@@ -5,7 +5,7 @@ import { IconArrowLeft } from '@tabler/icons-react'
 import { type GetServerSideProps } from 'next'
 import { type Project, type Prisma } from '@prisma/client'
 import { prisma } from '@/server/db'
-import { getSession, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { ProjectStatusBadge } from '@/components/project/ProjectStatusBadge'
 import { ProjectDropdownMenu } from '@/components/project/ProjectDropdownMenu'
 import { Carousel } from '@mantine/carousel'
@@ -15,6 +15,7 @@ import { type ReactNode } from 'react'
 import { Tag } from '@/components/common/Tag'
 import dayjs from 'dayjs'
 import { pascalToNormal } from '@/utils/string'
+import { getServerAuthSession } from '@/server/auth'
 
 type Props = {
   project: Project
@@ -27,7 +28,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       notFound: true,
     }
   }
-  const session = await getSession(context)
+  const session = await getServerAuthSession(context)
   if (!session) {
     return {
       redirect: {

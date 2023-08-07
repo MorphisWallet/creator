@@ -1,5 +1,4 @@
-import { type GetServerSidePropsContext } from 'next'
-import { getSession, signIn, useSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { Box, Button, Text } from '@mantine/core'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useDidUpdate } from '@mantine/hooks'
@@ -7,9 +6,11 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { Layout } from '@/components/layout/Layout'
 import React from 'react'
+import { type GetServerSidePropsContext } from 'next'
+import { getServerAuthSession } from '@/server/auth'
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getSession(context)
+  const session = await getServerAuthSession(context)
   // redirect user to dashboard if user has signed in
   if (session) {
     return {

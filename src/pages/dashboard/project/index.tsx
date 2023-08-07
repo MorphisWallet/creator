@@ -1,5 +1,4 @@
 import { type GetServerSideProps } from 'next'
-import { getSession } from 'next-auth/react'
 import { Box, Button, SimpleGrid, Text } from '@mantine/core'
 import Head from 'next/head'
 import { Layout } from '@/components/layout/Layout'
@@ -7,13 +6,14 @@ import { prisma } from '@/server/db'
 import { type Project } from '@prisma/client'
 import Link from 'next/link'
 import { ProjectCard } from '@/components/project/ProjectCard'
+import { getServerAuthSession } from '@/server/auth'
 
 type Props = {
   projects: Project[]
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const session = await getSession(context)
+  const session = await getServerAuthSession(context)
   const userId = session?.user?.id
   if (!userId) {
     return {

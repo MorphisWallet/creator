@@ -22,14 +22,14 @@ import { notifications } from '@mantine/notifications'
 import { useState } from 'react'
 import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import { type GetServerSideProps } from 'next'
-import { getSession } from 'next-auth/react'
 import { ProjectStatus } from '@prisma/client'
 import { pascalToNormal } from '@/utils/string'
 import { modals } from '@mantine/modals'
 import { Layout } from '@/components/layout/Layout'
+import { getServerAuthSession } from '@/server/auth'
 
 export const getServerSideProps: GetServerSideProps = async context => {
-  const session = await getSession(context)
+  const session = await getServerAuthSession(context)
   if (!session) {
     return {
       redirect: {

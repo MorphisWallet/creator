@@ -1,11 +1,11 @@
 import Head from 'next/head'
 import { type Project } from '@prisma/client'
 import { type GetServerSideProps } from 'next'
-import { getSession } from 'next-auth/react'
 import { prisma } from '@/server/db'
 import { ProjectForm } from '@/components/project/ProjectForm'
 import React from 'react'
 import { Layout } from '@/components/layout/Layout'
+import { getServerAuthSession } from '@/server/auth'
 
 type Props = {
   project: Project
@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       notFound: true,
     }
   }
-  const session = await getSession(context)
+  const session = await getServerAuthSession(context)
   if (!session) {
     return {
       redirect: {
