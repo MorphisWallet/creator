@@ -295,7 +295,7 @@ export default function ProjectDetailPage({ project }: Props) {
           <TwitterLink link={project.twitter} />
           <DiscordLink link={project.discord} />
         </Group>
-        {project.previewImages.length > 1 && (
+        {project.previewImages.length >= 1 && (
           <Carousel
             mx="auto"
             mt={64}
