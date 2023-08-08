@@ -103,7 +103,6 @@ model VerificationToken {
 
 model Project {
   id             String              @id @default(auto()) @map("_id") @db.ObjectId
-  blockchain     ProjectBlockchain
   blockchains    ProjectBlockchain[] @default([])
   name           String
   logoUrl        String

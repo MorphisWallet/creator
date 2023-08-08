@@ -1,4 +1,4 @@
-import { PrismaClient, type Project, type Prisma, ProjectStage, ProjectStatus, ProjectBlockchain, Category } from '@prisma/client'
+import { PrismaClient, type Prisma, ProjectStage, ProjectStatus, ProjectBlockchain, Category } from '@prisma/client'
 
 const prisma = new PrismaClient()
 import { faker } from '@faker-js/faker'
@@ -15,7 +15,7 @@ function createRandomProject(): Prisma.ProjectCreateManyInput {
     userId,
     bannerImage: faker.image.url(),
     logoUrl: faker.image.avatar(),
-    blockchain: faker.helpers.objectValue(ProjectBlockchain),
+    blockchains: faker.helpers.arrayElements(Object.values(ProjectBlockchain)),
     discord: faker.internet.url(),
     twitter: faker.internet.url(),
     website: faker.internet.url(),
