@@ -53,6 +53,7 @@ export const ProjectForm = ({ project }: Props) => {
   const { push } = useRouter()
   const isAdmin = data?.user?.role === 'Admin'
   const isPublishedOrInReview = project?.status === 'Published' || project?.status === 'InReview'
+  const shouldDisableEdit = isPublishedOrInReview && !isAdmin
 
   const goToProject = () => {
     void push('/dashboard/project')
@@ -86,11 +87,11 @@ export const ProjectForm = ({ project }: Props) => {
   const getForm = () => {
     switch (activeTab) {
       case 'Details':
-        return <ProjectDetailForm isDisabled={isPublishedOrInReview} />
+        return <ProjectDetailForm isDisabled={shouldDisableEdit} />
       case 'Links':
-        return <ProjectLinksForm isDisabled={isPublishedOrInReview} />
+        return <ProjectLinksForm isDisabled={shouldDisableEdit} />
       case 'Graphics':
-        return <ProjectGraphicsForm isDisabled={isPublishedOrInReview} />
+        return <ProjectGraphicsForm isDisabled={shouldDisableEdit} />
     }
   }
 
@@ -113,12 +114,12 @@ export const ProjectForm = ({ project }: Props) => {
         color: 'green',
       })
       if (isAdmin) {
-        void goBack()
+        void goToDetails(data.project.id)
       } else {
         if (data.project.status === 'InReview') {
           handler.open()
         } else {
-          void goToProject()
+          void goToDetails(data.project.id)
         }
       }
     },
@@ -222,7 +223,10 @@ export const ProjectForm = ({ project }: Props) => {
   }
 
   const submitProject = () => {
-    const status = isAdmin ? ProjectStatus.Published : ProjectStatus.InReview
+    let status = isAdmin ? ProjectStatus.Published : ProjectStatus.InReview
+    if (project?.status === 'Published') {
+      status = ProjectStatus.Published
+    }
     createOrUpdateProject(status)
   }
 

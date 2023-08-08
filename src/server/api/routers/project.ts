@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 import { prisma } from '@/server/db'
 import { projectCreateOrUpdateSchema } from '@/schemas/project'
 import { z } from 'zod'
-import { type Project } from '@prisma/client'
+import { type Prisma, type Project } from '@prisma/client'
 
 const MAX_PROJECTS_FOR_USER = 10
 
@@ -41,35 +41,50 @@ export const projectRouter = createTRPCRouter({
     }
 
     if (input.id) {
+      const filter: Prisma.ProjectWhereUniqueInput = {
+        id: input.id,
+      }
+      if (!isAdmin) {
+        filter.userId = user.id
+      }
       const project = await prisma.project.findUniqueOrThrow({
-        where: {
-          id: input.id,
-          userId: user.id,
-        },
+        where: filter,
       })
       const updateData = {
         ...input,
       }
       delete updateData.id
       let projectData: Project
-      if (project.status === 'Published') {
-        projectData = await prisma.project.update({
-          where: {
-            id: input.id,
-            userId: user.id,
-          },
-          data: {
-            description: input.description,
-            projectStage: input.projectStage,
-            previewImages: input.previewImages,
-            bannerImage: input.bannerImage,
-          },
-        })
+      if (!isAdmin) {
+        const shouldLimitEdit = project.status === 'Published' && input.status === 'Published'
+        if (shouldLimitEdit) {
+          projectData = await prisma.project.update({
+            where: {
+              id: input.id,
+              userId: user.id,
+            },
+            data: {
+              description: input.description,
+              projectStage: input.projectStage,
+              previewImages: input.previewImages,
+              bannerImage: input.bannerImage,
+            },
+          })
+        } else {
+          projectData = await prisma.project.update({
+            where: {
+              id: input.id,
+              userId: user.id,
+            },
+            data: {
+              ...updateData,
+            },
+          })
+        }
       } else {
         projectData = await prisma.project.update({
           where: {
             id: input.id,
-            userId: user.id,
           },
           data: {
             ...updateData,

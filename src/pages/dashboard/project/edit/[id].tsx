@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { type Project } from '@prisma/client'
+import { type Prisma, type Project } from '@prisma/client'
 import { type GetServerSideProps } from 'next'
 import { prisma } from '@/server/db'
 import { ProjectForm } from '@/components/project/ProjectForm'
@@ -27,11 +27,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
       },
     }
   }
+  const filter: Prisma.ProjectWhereUniqueInput = {
+    id,
+  }
+  if (session.user.role !== 'Admin') {
+    filter.userId = session.user.id
+  }
   const project = await prisma.project.findUnique({
-    where: {
-      id,
-      userId: session.user.id,
-    },
+    where: filter,
   })
   if (!project) {
     return {

@@ -58,7 +58,7 @@ type ActionButtonsProps = {
 const ActionButtons = ({ id, refetch, isFeatured }: ActionButtonsProps) => {
   const router = useRouter()
   const goToProjectDetail = (id: string) => {
-    void router.push(`/dashboard/project/${id}?from=admin`)
+    void router.push(`/dashboard/project/${id}`)
   }
   const [rejectReason, setRejectReason] = useState('')
 
