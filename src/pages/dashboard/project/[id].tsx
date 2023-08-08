@@ -273,7 +273,14 @@ export default function ProjectDetailPage({ project }: Props) {
         <Group spacing={26}>
           <Group spacing={8}>
             <LabelText>Built on:</LabelText>
-            <Tag label={project.blockchain} />
+            <Group spacing={12}>
+              {project.blockchains.map((blockchain, index) => (
+                <Tag
+                  key={index}
+                  label={blockchain}
+                />
+              ))}
+            </Group>
           </Group>
           <Group spacing={8}>
             <LabelText>Categories:</LabelText>

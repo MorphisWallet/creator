@@ -3,7 +3,7 @@ import { ProjectStatus, ProjectStage, ProjectBlockchain, Category } from '@prism
 
 export const projectCreateOrUpdateSchema = z.object({
   id: z.string().optional(),
-  blockchain: z.nativeEnum(ProjectBlockchain),
+  blockchains: z.array(z.nativeEnum(ProjectBlockchain)).min(1),
   categories: z.array(z.nativeEnum(Category)).min(1),
   name: z.string(),
   logoUrl: z.string(),

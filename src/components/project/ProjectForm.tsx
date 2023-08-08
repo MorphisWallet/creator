@@ -135,7 +135,7 @@ export const ProjectForm = ({ project }: Props) => {
     website,
     description,
     categories,
-    blockchain,
+    blockchains,
     name,
     reset,
     updateField,
@@ -153,7 +153,7 @@ export const ProjectForm = ({ project }: Props) => {
       updateField('website', project.website ?? '')
       updateField('description', project.description)
       updateField('categories', project.categories)
-      updateField('blockchain', project.blockchain)
+      updateField('blockchains', project.blockchains)
       updateField('name', project.name)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -184,6 +184,14 @@ export const ProjectForm = ({ project }: Props) => {
       })
     }
 
+    if (blockchains.length === 0) {
+      return notifications.show({
+        title: 'Error',
+        color: 'red',
+        message: 'Blockchain is required',
+      })
+    }
+
     if (name === '') {
       return notifications.show({
         title: 'Error',
@@ -209,7 +217,7 @@ export const ProjectForm = ({ project }: Props) => {
       website,
       description,
       categories,
-      blockchain,
+      blockchains,
       name,
       status,
     }

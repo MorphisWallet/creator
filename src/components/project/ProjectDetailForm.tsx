@@ -2,7 +2,6 @@ import { FormLayout } from '@/components/form/FormLayout'
 import { Stack } from '@mantine/core'
 import { FormTitle } from '@/components/form/FormTitle'
 import { Category, ProjectBlockchain, ProjectStage } from '@prisma/client'
-import { FormSelect } from '@/components/form/FormSelect'
 import { FormInput } from '@/components/form/FormInput'
 import { FormMultiSelect } from '@/components/form/FormMultiSelect'
 import { FormTextArea } from '@/components/form/FormTextArea'
@@ -29,20 +28,21 @@ export const ProjectDetailForm = ({ isDisabled }: Props) => {
     label: pascalToNormal(stage),
   }))
 
-  const { name, updateField, blockchain, categories, description, projectStage } = useProjectFormStore()
+  const { name, updateField, blockchains, categories, description, projectStage } = useProjectFormStore()
 
   return (
     <FormLayout>
       <Stack spacing={24}>
         <Stack spacing={8}>
           <FormTitle
-            label={'Blockchain'}
+            label={'Blockchains'}
             required={true}
           />
-          <FormSelect
+          <FormMultiSelect
             data={blockchainSelectData}
-            value={blockchain}
-            onChange={val => updateField('blockchain', val as ProjectBlockchain)}
+            value={blockchains}
+            placeholder={'Please select your project blockchains'}
+            onChange={val => updateField('blockchains', val as ProjectBlockchain[])}
             disabled={isDisabled}
           />
         </Stack>

@@ -1,4 +1,4 @@
-import { ProjectStatus, ProjectStage, ProjectBlockchain } from '@prisma/client'
+import { ProjectStatus, ProjectStage } from '@prisma/client'
 import { type ProjectCreateOrUpdateSchemaType } from '@/schemas'
 import { create } from 'zustand'
 
@@ -11,7 +11,7 @@ type Store = ProjectCreateOrUpdateSchemaType & {
 
 const initialState: ProjectCreateOrUpdateSchemaType = {
   id: undefined,
-  blockchain: ProjectBlockchain.Ethereum,
+  blockchains: [],
   categories: [],
   name: '',
   logoUrl: '',
