@@ -6,15 +6,15 @@ import { prisma } from '@/server/db'
 import { type Project } from '@prisma/client'
 import Link from 'next/link'
 import { ProjectCard } from '@/components/project/ProjectCard'
-import { getServerAuthSession } from '@/server/auth'
+import { getToken } from 'next-auth/jwt'
 
 type Props = {
   projects: Project[]
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const session = await getServerAuthSession(context)
-  const userId = session?.user?.id
+  const token = await getToken({ req: context.req })
+  const userId = token?.sub
   if (!userId) {
     return {
       redirect: {

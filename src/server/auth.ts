@@ -37,8 +37,16 @@ declare module 'next-auth' {
   interface User {
     twitter?: TwitterProfileType
     discord?: DiscordProfileType
+    role?: Role
     // ...other properties
     // role: UserRole;
+  }
+}
+
+declare module 'next-auth/jwt' {
+  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
+  interface JWT {
+    role?: Role
   }
 }
 
@@ -96,6 +104,10 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
           role: dbUser?.role ?? 'User',
         },
       }
+    },
+    jwt({ token, user }) {
+      if (user) token.role = user.role
+      return token
     },
   },
   events: {
