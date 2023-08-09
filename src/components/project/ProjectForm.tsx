@@ -56,7 +56,7 @@ export const ProjectForm = ({ project }: Props) => {
   const shouldDisableEdit = isPublishedOrInReview && !isAdmin
 
   const goToProject = () => {
-    void push('/project')
+    void push('/')
   }
 
   const goToDetails = (id: string) => {
