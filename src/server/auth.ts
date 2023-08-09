@@ -276,6 +276,9 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
     maxAge: 60 * 60 * 24 * 2, // 2 days
   },
   secret: env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: '/login',
+  },
 })
 
 /**
