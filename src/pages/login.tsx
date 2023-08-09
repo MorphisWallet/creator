@@ -1,11 +1,11 @@
-import { signIn, useSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { Box, Button, Text } from '@mantine/core'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { useDidUpdate } from '@mantine/hooks'
-import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { Layout } from '@/components/layout/Layout'
 import React from 'react'
+import { type GetServerSideProps } from 'next'
+import { getToken } from 'next-auth/jwt'
 
 const DiscordIcon = () => (
   <svg
@@ -86,18 +86,24 @@ const LoginButton = (props: LoginButtonProps) => {
   )
 }
 
+export const getServerSideProps: GetServerSideProps = async context => {
+  const token = await getToken({ req: context.req })
+  if (token) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+  return {
+    props: {},
+  }
+}
+
 const Login = () => {
   const callbackUrl = '/'
   const { openConnectModal } = useConnectModal()
-
-  /** handle sign in with ethereum with rainbowkit* */
-  const { status } = useSession()
-  const { push } = useRouter()
-  useDidUpdate(() => {
-    if (status === 'authenticated') {
-      void push(callbackUrl)
-    }
-  }, [status])
 
   return (
     <>
