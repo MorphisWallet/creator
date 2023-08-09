@@ -92,7 +92,7 @@ const LoadingIcon = () => (
 export const ProjectReviewAlert = ({ opened, onClose, logo, name, banner, id }: ProjectReviewAlertProps) => {
   const { push } = useRouter()
   const goToDetails = () => {
-    void push(`/dashboard/project/${id}`)
+    void push(`/project/${id}`)
   }
 
   return (

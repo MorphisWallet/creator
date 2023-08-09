@@ -76,11 +76,11 @@ export const UserDropdown = () => {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Link href={'/dashboard/settings'}>
+        <Link href={'/settings'}>
           <Menu.Item>Setting</Menu.Item>
         </Link>
         {data.user?.role === 'Admin' && (
-          <Link href={'/dashboard/admin'}>
+          <Link href={'/admin'}>
             <Menu.Item>Admin</Menu.Item>
           </Link>
         )}

@@ -34,9 +34,9 @@ export const ProjectCard = ({ project }: Props) => {
         }}
         onClick={() => {
           if (project.status === 'Draft') {
-            void router.push(`/dashboard/project/edit/${project.id}`)
+            void router.push(`/project/edit/${project.id}`)
           } else {
-            void router.push(`/dashboard/project/${project.id}`)
+            void router.push(`/project/${project.id}`)
           }
         }}
       />

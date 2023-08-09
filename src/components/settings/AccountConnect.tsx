@@ -12,7 +12,7 @@ import { useDidUpdate } from '@mantine/hooks'
 export const AccountConnect = () => {
   const { data, update, status } = useSession()
   const isLoading = status === 'loading'
-  const callbackUrl = '/dashboard/project'
+  const callbackUrl = '/'
   const twitterUserName = data?.user?.twitter?.username
   const discordUserName = data?.user?.discord?.username
   const ethereumAddress = data?.user?.address

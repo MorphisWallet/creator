@@ -33,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
   if (!session) {
     return {
       redirect: {
-        destination: '/',
+        destination: '/login',
         permanent: false,
       },
     }
@@ -58,7 +58,7 @@ type ActionButtonsProps = {
 const ActionButtons = ({ id, refetch, isFeatured }: ActionButtonsProps) => {
   const router = useRouter()
   const goToProjectDetail = (id: string) => {
-    void router.push(`/dashboard/project/${id}`)
+    void router.push(`/project/${id}`)
   }
   const [rejectReason, setRejectReason] = useState('')
 

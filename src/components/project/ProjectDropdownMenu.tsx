@@ -13,7 +13,7 @@ type Props = {
 export const ProjectDropdownMenu = ({ id, onDeleted }: Props) => {
   const router = useRouter()
   const goToEdit = () => {
-    void router.push(`/dashboard/project/edit/${id}`)
+    void router.push(`/project/edit/${id}`)
   }
 
   const confirmDelete = () =>

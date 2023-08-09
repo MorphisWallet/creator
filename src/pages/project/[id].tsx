@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
   if (!session) {
     return {
       redirect: {
-        destination: '/',
+        destination: '/login',
         permanent: false,
       },
     }
@@ -152,8 +152,8 @@ const DiscordLink = ({ link }: { link?: string | null }) => {
 export default function ProjectDetailPage({ project }: Props) {
   const { push, query } = useRouter()
   const goBack = () => {
-    if (query?.from === 'admin') return push('/dashboard/admin')
-    return push('/dashboard/project')
+    if (query?.from === 'admin') return push('/admin')
+    return push('/')
   }
 
   const projectName = project.name

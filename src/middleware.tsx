@@ -7,8 +7,6 @@ export default withAuth({
     },
   },
   pages: {
-    signIn: '/',
+    signIn: '/login',
   },
 })
-
-export const config = { matcher: ['/dashboard/(.*)'] }
