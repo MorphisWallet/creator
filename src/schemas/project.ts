@@ -7,6 +7,14 @@ export const projectCreateOrUpdateSchema = z.object({
   categories: z.array(z.nativeEnum(Category)).min(1),
   name: z.string(),
   logoUrl: z.string(),
+  slug: z.string().refine(
+    value => {
+      return /^[a-z0-9-]+$/.test(value)
+    },
+    {
+      message: 'Slugs can only contain lowercase letters, numbers, or dashes.',
+    }
+  ),
   description: z.string(),
   website: z.string().url().optional().or(z.literal('')),
   twitter: z.string().url().optional().or(z.literal('')),

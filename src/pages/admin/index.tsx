@@ -221,7 +221,7 @@ export default function AdminDashboard() {
   const [featuredValue, setFeaturedValue] = useState('All')
   const [projectStatus, setProjectStatus] = useState<ProjectStatus[]>([ProjectStatus.InReview])
   const skip = (currentPage - 1) * pageSize
-  const { data, refetch, isRefetching } = api.admin.listProjects.useQuery(
+  const { data, refetch, isRefetching, error } = api.admin.listProjects.useQuery(
     {
       take: pageSize,
       skip: skip,
@@ -231,8 +231,19 @@ export default function AdminDashboard() {
     {
       keepPreviousData: true,
       refetchOnWindowFocus: false,
+      retry: 2,
     }
   )
+
+  useDidUpdate(() => {
+    if (error) {
+      notifications.show({
+        title: 'Error',
+        message: error.message,
+        color: 'red',
+      })
+    }
+  }, [error])
   const totalPage = Math.ceil((data?.count ?? 0) / pageSize)
 
   useDidUpdate(() => {

@@ -137,6 +137,7 @@ export const ProjectForm = ({ project }: Props) => {
     categories,
     blockchains,
     name,
+    slug,
     reset,
     updateField,
   } = useProjectFormStore()
@@ -155,6 +156,7 @@ export const ProjectForm = ({ project }: Props) => {
       updateField('categories', project.categories)
       updateField('blockchains', project.blockchains)
       updateField('name', project.name)
+      updateField('slug', project.slug)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -220,14 +222,22 @@ export const ProjectForm = ({ project }: Props) => {
       blockchains,
       name,
       status,
+      slug,
     }
 
     if (project?.id) {
       resultToParse.id = project.id
     }
-    const zodResult = projectCreateOrUpdateSchema.parse(resultToParse)
+    const zodResult = projectCreateOrUpdateSchema.safeParse(resultToParse)
+    if (!zodResult.success) {
+      return notifications.show({
+        title: 'Error',
+        color: 'red',
+        message: zodResult.error.issues[0]?.message,
+      })
+    }
 
-    mutate(zodResult)
+    mutate(zodResult.data)
   }
 
   const submitProject = () => {

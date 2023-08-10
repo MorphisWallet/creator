@@ -100,6 +100,16 @@ export const projectRouter = createTRPCRouter({
       throw new Error('Only admins can publish projects')
     }
 
+    const slugExists = await prisma.project.findUnique({
+      where: {
+        slug: input.slug,
+      },
+    })
+
+    if (slugExists) {
+      throw new Error('Slug already exists')
+    }
+
     const createdProject = await prisma.project.create({
       data: {
         ...input,

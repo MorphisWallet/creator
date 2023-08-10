@@ -28,7 +28,7 @@ export const ProjectDetailForm = ({ isDisabled }: Props) => {
     label: pascalToNormal(stage),
   }))
 
-  const { name, updateField, blockchains, categories, description, projectStage } = useProjectFormStore()
+  const { name, updateField, blockchains, categories, description, projectStage, slug } = useProjectFormStore()
 
   return (
     <FormLayout>
@@ -55,6 +55,18 @@ export const ProjectDetailForm = ({ isDisabled }: Props) => {
             placeholder={'Name'}
             value={name}
             onChange={e => updateField('name', e.currentTarget.value)}
+            disabled={isDisabled}
+          />
+        </Stack>
+        <Stack spacing={8}>
+          <FormTitle
+            label={'Slug'}
+            required={true}
+          />
+          <FormInput
+            placeholder={'Slug is a unique identifier for your project'}
+            value={slug}
+            onChange={e => updateField('slug', e.currentTarget.value)}
             disabled={isDisabled}
           />
         </Stack>

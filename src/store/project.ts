@@ -16,6 +16,7 @@ const initialState: ProjectCreateOrUpdateSchemaType = {
   name: '',
   logoUrl: '',
   description: '',
+  slug: '',
   website: undefined,
   twitter: undefined,
   discord: undefined,
