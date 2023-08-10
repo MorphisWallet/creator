@@ -14,6 +14,7 @@ function createRandomProject(): Prisma.ProjectCreateManyInput {
     isFeatured: faker.datatype.boolean(),
     userId,
     bannerImage: faker.image.url(),
+    slug: faker.commerce.productName(),
     logoUrl: faker.image.avatar(),
     blockchains: faker.helpers.arrayElements(Object.values(ProjectBlockchain)),
     discord: faker.internet.url(),
