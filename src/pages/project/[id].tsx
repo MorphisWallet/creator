@@ -262,11 +262,11 @@ export default function ProjectDetailPage({ project }: Props) {
           mb={11}
         >
           <Group spacing={5}>
-            <LabelText>By</LabelText>
+            <LabelText>Added By</LabelText>
             <ValueText>{project.user.name}</ValueText>
           </Group>
           <Group spacing={5}>
-            <LabelText>Created</LabelText>
+            <LabelText>Added</LabelText>
             <ValueText>{dayjs(project.createdAt).format('MMM YYYY')}</ValueText>
           </Group>
         </Group>
