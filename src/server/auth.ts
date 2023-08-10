@@ -138,8 +138,9 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
         return {
           id: data.id,
           name: data.name,
-          email: null,
+          email: data.id,
           image: data.profile_image_url,
+          address: data.id,
           twitter: {
             id: data.id,
             name: data.name,
@@ -163,8 +164,9 @@ export const authOptions: (ctxReq: CtxOrReq) => NextAuthOptions = ({ req }) => (
         return {
           id: profile.id,
           name: profile.username,
-          email: profile.email,
+          email: profile.id,
           image: profile.image_url,
+          address: profile.id,
           discord: {
             id: profile.id,
             name: profile.username,
