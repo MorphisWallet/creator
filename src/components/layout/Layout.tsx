@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Container, Group } from '@mantine/core'
-import { UserDropdown } from '@/components/layout/UserDropdown'
+import { UserProfile } from '@/components/layout/UserProfile'
 import Link from 'next/link'
 
 type Props = {
@@ -139,19 +139,19 @@ export const Layout = ({ children, fullWidth }: Props) => {
         <Container
           size={'lg'}
           w={'100%'}
-          px={0}
+          px={'md'}
         >
           <Group position={'apart'}>
             <Link href={'/'}>
               <Logo />
             </Link>
-            <UserDropdown />
+            <UserProfile />
           </Group>
         </Container>
       </Box>
       <Container
         size={fullWidth ? 'full' : 'lg'}
-        px={0}
+        px={fullWidth ? 0 : 'md'}
       >
         <Box>{children}</Box>
       </Container>

@@ -1,4 +1,5 @@
 import { withSentryConfig } from '@sentry/nextjs'
+import NextBundleAnalyzer from '@next/bundle-analyzer'
 
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
@@ -28,8 +29,13 @@ const config = {
     swcPlugins: [['next-superjson-plugin', {}]],
   },
 }
+
+const withBundleAnalyzer = NextBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
+
 export default withSentryConfig(
-  config,
+  withBundleAnalyzer(config),
   {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options

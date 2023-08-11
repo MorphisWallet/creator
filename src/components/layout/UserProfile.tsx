@@ -20,7 +20,7 @@ const EthIcon = (
   </svg>
 )
 
-export const UserDropdown = () => {
+export const UserProfile = () => {
   const { data } = useSession()
 
   if (!data) {

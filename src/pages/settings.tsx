@@ -2,6 +2,7 @@ import { Box, Text } from '@mantine/core'
 import Head from 'next/head'
 import { AccountConnect } from '@/components/settings/AccountConnect'
 import { Layout } from '@/components/layout/Layout'
+import { WalletLoginProviders } from '@/providers/WalletLoginProviders'
 
 export default function Settings() {
   return (
@@ -19,7 +20,9 @@ export default function Settings() {
         Settings
       </Text>
       <Box w={550}>
-        <AccountConnect />
+        <WalletLoginProviders>
+          <AccountConnect />
+        </WalletLoginProviders>
       </Box>
     </Layout>
   )

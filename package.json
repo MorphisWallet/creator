@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
@@ -33,6 +34,7 @@
     "@mantine/notifications": "^6.0.13",
     "@morphis-labs/prettier-config": "^0.0.2",
     "@next-auth/prisma-adapter": "^1.0.5",
+    "@next/bundle-analyzer": "^13.4.13",
     "@prisma/client": "^5.1.1",
     "@rainbow-me/rainbowkit": "^1.0.8",
     "@sentry/nextjs": "^7.61.0",
