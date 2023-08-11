@@ -6,6 +6,7 @@ import { env } from '@/env.mjs'
 import { publicProvider } from 'wagmi/providers/public'
 import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { type GetSiweMessageOptions, RainbowKitSiweNextAuthProvider } from '@/providers/RainbowKitSiweNextAuthProvider'
+import '@rainbow-me/rainbowkit/styles.css'
 
 type Props = {
   children: React.ReactNode

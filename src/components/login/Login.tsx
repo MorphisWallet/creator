@@ -1,8 +1,9 @@
 import { Box, Button, Text } from '@mantine/core'
 import { signIn } from 'next-auth/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { WalletLoginProviders } from '@/providers/WalletLoginProviders'
+import { useDisconnect } from 'wagmi'
 
 const DiscordIcon = () => (
   <svg
@@ -86,9 +87,16 @@ const LoginButton = (props: LoginButtonProps) => {
 const LoginOption = () => {
   const callbackUrl = '/'
   const { openConnectModal } = useConnectModal()
+  const { disconnect } = useDisconnect()
+
+  useEffect(() => {
+    disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <Box
-      mt={168}
+      mt={100}
       sx={{
         borderRadius: '72px',
         border: '1px solid #E2E2EA',
@@ -99,6 +107,7 @@ const LoginOption = () => {
       px={94}
       pt={58}
       pb={100}
+      mb={20}
     >
       <svg
         width="159"
