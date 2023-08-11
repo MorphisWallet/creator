@@ -87,12 +87,14 @@ const LoginButton = (props: LoginButtonProps) => {
 const LoginOption = () => {
   const callbackUrl = '/'
   const { openConnectModal } = useConnectModal()
-  const { disconnect } = useDisconnect()
+  const { disconnect, status } = useDisconnect()
 
   useEffect(() => {
-    disconnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    console.log(status)
+    if (status === 'success') {
+      openConnectModal?.()
+    }
+  }, [openConnectModal, status])
 
   return (
     <Box
@@ -223,7 +225,13 @@ const LoginOption = () => {
       </Text>
       <LoginButton
         leftIcon={<EthereumIcon />}
-        onClick={openConnectModal}
+        onClick={() => {
+          if (status === 'success') {
+            openConnectModal?.()
+          } else {
+            disconnect()
+          }
+        }}
       >
         Login with Wallet
       </LoginButton>
