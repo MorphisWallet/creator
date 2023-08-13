@@ -88,3 +88,5 @@ export const Project = () => {
     </Box>
   )
 }
+
+export default Project

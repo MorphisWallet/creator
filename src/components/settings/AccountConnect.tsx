@@ -8,8 +8,9 @@ import { api } from '@/utils/api'
 import { notifications } from '@mantine/notifications'
 import { EthereumVerificationMessage } from '@/constants'
 import { useDidUpdate } from '@mantine/hooks'
+import { WalletLoginProviders } from '@/providers/WalletLoginProviders'
 
-export const AccountConnect = () => {
+export const AccountOptions = () => {
   const { data, update, status } = useSession()
   const isLoading = status === 'loading'
   const callbackUrl = '/'
@@ -234,3 +235,13 @@ export const AccountConnect = () => {
     </Stack>
   )
 }
+
+export const AccountConnect = () => {
+  return (
+    <WalletLoginProviders>
+      <AccountOptions />
+    </WalletLoginProviders>
+  )
+}
+
+export default AccountConnect

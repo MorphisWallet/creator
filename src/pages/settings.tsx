@@ -1,8 +1,17 @@
-import { Box, Text } from '@mantine/core'
+import { Box, Loader, Text } from '@mantine/core'
 import Head from 'next/head'
-import { AccountConnect } from '@/components/settings/AccountConnect'
 import { Layout } from '@/components/layout/Layout'
-import { WalletLoginProviders } from '@/providers/WalletLoginProviders'
+import dynamic from 'next/dynamic'
+
+const AccountConnect = dynamic(() => import('@/components/settings/AccountConnect'), {
+  loading: () => (
+    <Loader
+      color={'red'}
+      size={40}
+      mt={20}
+    />
+  ),
+})
 
 export default function Settings() {
   return (
@@ -20,9 +29,7 @@ export default function Settings() {
         Settings
       </Text>
       <Box w={550}>
-        <WalletLoginProviders>
-          <AccountConnect />
-        </WalletLoginProviders>
+        <AccountConnect />
       </Box>
     </Layout>
   )

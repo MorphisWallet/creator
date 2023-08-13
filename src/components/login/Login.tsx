@@ -265,3 +265,5 @@ export const Login = () => {
     </WalletLoginProviders>
   )
 }
+
+export default Login
