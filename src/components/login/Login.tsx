@@ -90,7 +90,6 @@ const LoginOption = () => {
   const { disconnect, status } = useDisconnect()
 
   useEffect(() => {
-    console.log(status)
     if (status === 'success') {
       openConnectModal?.()
     }

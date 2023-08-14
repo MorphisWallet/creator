@@ -3,6 +3,7 @@ import { Box, Container, Group } from '@mantine/core'
 import { UserProfile } from '@/components/layout/UserProfile'
 import Link from 'next/link'
 import { MantineProviders } from '@/providers/MantineProviders'
+import { ErrorBoundary, HighlightInit } from '@highlight-run/next/client'
 
 type Props = {
   children: React.ReactNode
@@ -128,36 +129,47 @@ const Logo = () => {
 
 export const Layout = ({ children, fullWidth }: Props) => {
   return (
-    <MantineProviders>
-      <Box>
-        <Box
-          h={94}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            borderBottom: '1px solid #2F2F2F',
-          }}
-        >
-          <Container
-            size={'lg'}
-            w={'100%'}
-            px={'md'}
+    <ErrorBoundary>
+      <HighlightInit
+        projectId={'mem28xg2'}
+        tracingOrigins
+        networkRecording={{
+          enabled: true,
+          recordHeadersAndBody: true,
+          urlBlocklist: [],
+        }}
+      />
+      <MantineProviders>
+        <Box>
+          <Box
+            h={94}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              borderBottom: '1px solid #2F2F2F',
+            }}
           >
-            <Group position={'apart'}>
-              <Link href={'/'}>
-                <Logo />
-              </Link>
-              <UserProfile />
-            </Group>
+            <Container
+              size={'lg'}
+              w={'100%'}
+              px={'md'}
+            >
+              <Group position={'apart'}>
+                <Link href={'/'}>
+                  <Logo />
+                </Link>
+                <UserProfile />
+              </Group>
+            </Container>
+          </Box>
+          <Container
+            size={fullWidth ? 'full' : 'lg'}
+            px={fullWidth ? 0 : 'md'}
+          >
+            <Box>{children}</Box>
           </Container>
         </Box>
-        <Container
-          size={fullWidth ? 'full' : 'lg'}
-          px={fullWidth ? 0 : 'md'}
-        >
-          <Box>{children}</Box>
-        </Container>
-      </Box>
-    </MantineProviders>
+      </MantineProviders>
+    </ErrorBoundary>
   )
 }

@@ -3,22 +3,15 @@ import Link from 'next/link'
 import { ProjectCard } from '@/components/project/ProjectCard'
 import { useSession } from 'next-auth/react'
 import { api } from '@/utils/api'
-import { useEffect } from 'react'
 
 export const Project = () => {
   const { status } = useSession({
     required: true,
   })
 
-  const { data: projectData, error } = api.project.list.useQuery(undefined, {
+  const { data: projectData } = api.project.list.useQuery(undefined, {
     enabled: status === 'authenticated',
   })
-
-  useEffect(() => {
-    if (error) {
-      console.dir(error)
-    }
-  }, [error])
 
   return (
     <Box>
