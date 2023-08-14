@@ -3,15 +3,28 @@ import Link from 'next/link'
 import { ProjectCard } from '@/components/project/ProjectCard'
 import { useSession } from 'next-auth/react'
 import { api } from '@/utils/api'
+import { useDidUpdate } from '@mantine/hooks'
+import { notifications } from '@mantine/notifications'
 
 export const Project = () => {
   const { status } = useSession({
     required: true,
   })
 
-  const { data: projectData } = api.project.list.useQuery(undefined, {
+  const { data: projectData, error } = api.project.list.useQuery(undefined, {
     enabled: status === 'authenticated',
+    retry: false,
   })
+
+  useDidUpdate(() => {
+    if (error) {
+      notifications.show({
+        title: 'Error',
+        message: error.message,
+        color: 'red',
+      })
+    }
+  }, [error])
 
   return (
     <Box>

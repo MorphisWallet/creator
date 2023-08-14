@@ -7,7 +7,7 @@ export default function NewProjectPage() {
   return (
     <Layout>
       <Head>
-        <title>Kiosk - Submit a project</title>
+        <title>Kiosk Creator - Project</title>
       </Head>
       <ProjectForm />
     </Layout>

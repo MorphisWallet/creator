@@ -1,70 +1,17 @@
 import { useRouter } from 'next/router'
 import Head from 'next/head'
-import { ActionIcon, Box, Container, Group, Image, Text } from '@mantine/core'
-import { IconArrowLeft } from '@tabler/icons-react'
-import { type GetServerSideProps } from 'next'
-import { type Prisma } from '@prisma/client'
-import { prisma } from '@/server/db'
+import { ActionIcon, Alert, Box, Center, Container, Group, Image, Loader, Text } from '@mantine/core'
+import { IconAlertCircle, IconArrowLeft } from '@tabler/icons-react'
 import { ProjectStatusBadge } from '@/components/project/ProjectStatusBadge'
 import { ProjectDropdownMenu } from '@/components/project/ProjectDropdownMenu'
 import { Carousel } from '@mantine/carousel'
 import { RejectMessage } from '@/components/project/RejectMessage'
 import { Layout } from '@/components/layout/Layout'
-import { type ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 import { Tag } from '@/components/common/Tag'
 import dayjs from 'dayjs'
 import { pascalToNormal } from '@/utils/string'
-import { getServerAuthSession } from '@/server/auth'
-
-async function getProjectWithUser(filter: Prisma.ProjectWhereUniqueInput) {
-  return await prisma.project.findUnique({
-    where: filter,
-    include: {
-      user: true,
-    },
-  })
-}
-
-type ProjectWithUser = Exclude<Prisma.PromiseReturnType<typeof getProjectWithUser>, null>
-
-type Props = {
-  project: ProjectWithUser
-}
-
-export const getServerSideProps: GetServerSideProps<Props> = async context => {
-  const id = context.params?.id
-  if (!id || typeof id !== 'string') {
-    return {
-      notFound: true,
-    }
-  }
-  const session = await getServerAuthSession(context)
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    }
-  }
-
-  const filter: Prisma.ProjectWhereUniqueInput = {
-    id,
-  }
-  if (session.user.role !== 'Admin') {
-    filter['userId'] = session.user.id
-  }
-  const project = await getProjectWithUser(filter)
-  if (!project) {
-    return {
-      notFound: true,
-    }
-  }
-
-  return {
-    props: { project },
-  }
-}
+import { api } from '@/utils/api'
 
 const LabelText = ({ children }: { children: ReactNode }) => {
   return (
@@ -149,226 +96,256 @@ const DiscordLink = ({ link }: { link?: string | null }) => {
   )
 }
 
-export default function ProjectDetailPage({ project }: Props) {
+export default function ProjectDetailPage() {
   const { push, query } = useRouter()
   const goBack = () => {
     if (query?.from === 'admin') return push('/admin')
     return push('/')
   }
 
-  const projectName = project.name
+  const { data, isLoading, error } = api.project.getProjectById.useQuery(
+    {
+      id: query.id as string,
+    },
+    {
+      retry: false,
+      enabled: Boolean(query.id),
+    }
+  )
 
-  const title = `Kiosk - Project - ${projectName}`
+  const project = data?.project
 
   return (
     <Layout fullWidth={true}>
       <Head>
-        <title>{title}</title>
+        <title>Kiosk Creator - Project</title>
       </Head>
-      <Box sx={{ position: 'relative' }}>
-        <ActionIcon
-          variant="filled"
-          radius="xl"
-          onClick={() => void goBack()}
-          sx={{
-            position: 'absolute',
-            top: 30,
-            left: 30,
-            zIndex: 1,
-          }}
-        >
-          <IconArrowLeft
-            size="1rem"
-            color={'white'}
+      {error && (
+        <Center mt={'md'}>
+          <Alert
+            icon={<IconAlertCircle size="1rem" />}
+            title="Error!"
+            color="red"
+          >
+            {error.message}
+          </Alert>
+        </Center>
+      )}
+      {isLoading && (
+        <Center mt={'md'}>
+          <Loader
+            color={'red'}
+            size={40}
           />
-        </ActionIcon>
-        <Image
-          src={project.bannerImage}
-          height={600}
-          fit={'cover'}
-          alt={projectName}
-        />
-      </Box>
-
-      <Container size={'lg'}>
-        <Box sx={{ position: 'relative', marginBottom: -84 }}>
-          <Image
-            src={project.logoUrl}
-            width={168}
-            height={168}
-            fit={'cover'}
-            alt={'logo'}
-            radius={56}
-            styles={{
-              image: {
-                border: '9px solid #1D1D1F',
-              },
-            }}
-            sx={{
-              position: 'relative',
-              top: -84,
-            }}
-          />
-        </Box>
-
-        {project.status === 'Rejected' && (
-          <Box mt={40}>
-            <RejectMessage message={project.rejectedReason} />
-          </Box>
-        )}
-
-        <Group
-          position={'apart'}
-          mt={45}
-        >
-          <Group spacing={18}>
-            <Text
-              lineClamp={1}
-              truncate
-              color={'white.1'}
-              size={34}
-              fw={800}
+        </Center>
+      )}
+      {project && (
+        <>
+          <Box sx={{ position: 'relative' }}>
+            <ActionIcon
+              variant="filled"
+              radius="xl"
+              onClick={() => void goBack()}
+              sx={{
+                position: 'absolute',
+                top: 30,
+                left: 30,
+                zIndex: 1,
+              }}
             >
-              {project.name}
-            </Text>
+              <IconArrowLeft
+                size="1rem"
+                color={'white'}
+              />
+            </ActionIcon>
+            <Image
+              src={project.bannerImage}
+              height={600}
+              fit={'cover'}
+              alt={project.name}
+            />
+          </Box>
+          <Container size={'lg'}>
+            <Box sx={{ position: 'relative', marginBottom: -84 }}>
+              <Image
+                src={project.logoUrl}
+                width={168}
+                height={168}
+                fit={'cover'}
+                alt={'logo'}
+                radius={56}
+                styles={{
+                  image: {
+                    border: '9px solid #1D1D1F',
+                  },
+                }}
+                sx={{
+                  position: 'relative',
+                  top: -84,
+                }}
+              />
+            </Box>
+
+            {project.status === 'Rejected' && (
+              <Box mt={40}>
+                <RejectMessage message={project.rejectedReason} />
+              </Box>
+            )}
+
+            <Group
+              position={'apart'}
+              mt={45}
+            >
+              <Group spacing={18}>
+                <Text
+                  lineClamp={1}
+                  truncate
+                  color={'white.1'}
+                  size={34}
+                  fw={800}
+                >
+                  {project.name}
+                </Text>
+                <Box
+                  sx={{
+                    backgroundColor: '#C8FD7C',
+                    borderRadius: '8px',
+                  }}
+                  px={8}
+                  py={2}
+                >
+                  <Text
+                    size={15}
+                    fw={500}
+                    color={'#222222'}
+                  >
+                    {pascalToNormal(project.projectStage)}
+                  </Text>
+                </Box>
+              </Group>
+              <Group>
+                <ProjectStatusBadge status={project.status} />
+                <ProjectDropdownMenu
+                  id={project.id}
+                  onDeleted={() => void goBack()}
+                />
+              </Group>
+            </Group>
+            <Group
+              spacing={26}
+              mt={14}
+              mb={11}
+            >
+              <Group spacing={5}>
+                <LabelText>Added By</LabelText>
+                <ValueText>{project.user.name}</ValueText>
+              </Group>
+              <Group spacing={5}>
+                <LabelText>Added</LabelText>
+                <ValueText>{dayjs(project.createdAt).format('MMM YYYY')}</ValueText>
+              </Group>
+            </Group>
+            <Group spacing={26}>
+              <Group spacing={8}>
+                <LabelText>Built on:</LabelText>
+                <Group spacing={12}>
+                  {project.blockchains.map((blockchain, index) => (
+                    <Tag
+                      key={index}
+                      label={blockchain}
+                    />
+                  ))}
+                </Group>
+              </Group>
+              <Group spacing={8}>
+                <LabelText>Categories:</LabelText>
+                <Group spacing={12}>
+                  {project.categories.map((category, index) => (
+                    <Tag
+                      key={index}
+                      label={category}
+                    />
+                  ))}
+                </Group>
+              </Group>
+            </Group>
+            <Group
+              mt={23}
+              spacing={33}
+            >
+              <WebsiteLink link={project.website} />
+              <TwitterLink link={project.twitter} />
+              <DiscordLink link={project.discord} />
+            </Group>
+            {project.previewImages.length >= 1 && (
+              <Carousel
+                mx="auto"
+                mt={64}
+                withIndicators={false}
+                height={480}
+                mb={93}
+                slideGap="md"
+                slideSize="640px"
+                align="start"
+                dragFree
+                withControls={false}
+                containScroll={'trimSnaps'}
+                sx={{
+                  cursor: 'grab',
+                }}
+              >
+                {project.previewImages.map((image, index) => (
+                  <Carousel.Slide key={index}>
+                    <Image
+                      src={image}
+                      height={480}
+                      fit={'cover'}
+                      alt={project.name}
+                      radius={16}
+                    />
+                  </Carousel.Slide>
+                ))}
+              </Carousel>
+            )}
             <Box
               sx={{
-                backgroundColor: '#C8FD7C',
-                borderRadius: '8px',
+                borderBottom: '1px solid #303134',
               }}
-              px={8}
-              py={2}
+              mb={40}
             >
               <Text
-                size={15}
-                fw={500}
-                color={'#222222'}
+                size={16}
+                fw={700}
+                color={'white.1'}
+                sx={{
+                  borderBottom: '3px solid #E6E6E6',
+                  display: 'inline-block',
+                }}
               >
-                {pascalToNormal(project.projectStage)}
+                Project Details
               </Text>
             </Box>
-          </Group>
-          <Group>
-            <ProjectStatusBadge status={project.status} />
-            <ProjectDropdownMenu
-              id={project.id}
-              onDeleted={() => void goBack()}
-            />
-          </Group>
-        </Group>
-        <Group
-          spacing={26}
-          mt={14}
-          mb={11}
-        >
-          <Group spacing={5}>
-            <LabelText>Added By</LabelText>
-            <ValueText>{project.user.name}</ValueText>
-          </Group>
-          <Group spacing={5}>
-            <LabelText>Added</LabelText>
-            <ValueText>{dayjs(project.createdAt).format('MMM YYYY')}</ValueText>
-          </Group>
-        </Group>
-        <Group spacing={26}>
-          <Group spacing={8}>
-            <LabelText>Built on:</LabelText>
-            <Group spacing={12}>
-              {project.blockchains.map((blockchain, index) => (
-                <Tag
-                  key={index}
-                  label={blockchain}
-                />
-              ))}
-            </Group>
-          </Group>
-          <Group spacing={8}>
-            <LabelText>Categories:</LabelText>
-            <Group spacing={12}>
-              {project.categories.map((category, index) => (
-                <Tag
-                  key={index}
-                  label={category}
-                />
-              ))}
-            </Group>
-          </Group>
-        </Group>
-        <Group
-          mt={23}
-          spacing={33}
-        >
-          <WebsiteLink link={project.website} />
-          <TwitterLink link={project.twitter} />
-          <DiscordLink link={project.discord} />
-        </Group>
-        {project.previewImages.length >= 1 && (
-          <Carousel
-            mx="auto"
-            mt={64}
-            withIndicators={false}
-            height={480}
-            mb={93}
-            slideGap="md"
-            slideSize="640px"
-            align="start"
-            dragFree
-            withControls={false}
-            containScroll={'trimSnaps'}
-            sx={{
-              cursor: 'grab',
-            }}
-          >
-            {project.previewImages.map((image, index) => (
-              <Carousel.Slide key={index}>
-                <Image
-                  src={image}
-                  height={480}
-                  fit={'cover'}
-                  alt={projectName}
-                  radius={16}
-                />
-              </Carousel.Slide>
-            ))}
-          </Carousel>
-        )}
-        <Box
-          sx={{
-            borderBottom: '1px solid #303134',
-          }}
-          mb={40}
-        >
-          <Text
-            size={16}
-            fw={700}
-            color={'white.1'}
-            sx={{
-              borderBottom: '3px solid #E6E6E6',
-              display: 'inline-block',
-            }}
-          >
-            Project Details
-          </Text>
-        </Box>
-        <Text
-          size={24}
-          fw={700}
-          color={'white.1'}
-          mb={14}
-        >
-          About Project
-        </Text>
-        <Text
-          size={16}
-          color={'white.1'}
-          pb={40}
-          sx={{
-            whiteSpace: 'pre-line',
-          }}
-        >
-          {project.description}
-        </Text>
-      </Container>
+            <Text
+              size={24}
+              fw={700}
+              color={'white.1'}
+              mb={14}
+            >
+              About Project
+            </Text>
+            <Text
+              size={16}
+              color={'white.1'}
+              pb={40}
+              sx={{
+                whiteSpace: 'pre-line',
+              }}
+            >
+              {project.description}
+            </Text>
+          </Container>
+        </>
+      )}
     </Layout>
   )
 }

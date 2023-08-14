@@ -8,7 +8,7 @@ export default function Settings() {
   return (
     <Layout>
       <Head>
-        <title>Kiosk - Settings</title>
+        <title>Kiosk Creator - Setting</title>
       </Head>
       <Text
         size={42}

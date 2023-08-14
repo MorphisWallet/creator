@@ -19,35 +19,12 @@ import { useRouter } from 'next/router'
 import dayjs from 'dayjs'
 import { ProjectStatusBadge } from '@/components/project/ProjectStatusBadge'
 import { notifications } from '@mantine/notifications'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useDidUpdate, useDisclosure } from '@mantine/hooks'
-import { type GetServerSideProps } from 'next'
 import { ProjectStatus } from '@prisma/client'
 import { pascalToNormal } from '@/utils/string'
 import { modals } from '@mantine/modals'
 import { Layout } from '@/components/layout/Layout'
-import { getServerAuthSession } from '@/server/auth'
-
-export const getServerSideProps: GetServerSideProps = async context => {
-  const session = await getServerAuthSession(context)
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    }
-  }
-  if (session.user.role !== 'Admin') {
-    return {
-      notFound: true,
-    }
-  }
-
-  return {
-    props: {},
-  }
-}
 
 type ActionButtonsProps = {
   id: string
@@ -295,9 +272,17 @@ export default function AdminDashboard() {
   return (
     <Layout>
       <Head>
-        <title>Kiosk - Admin</title>
+        <title>Kiosk Creator - Admin</title>
       </Head>
-      <h1>Admin Dashboard</h1>
+      <Text
+        size={42}
+        fw={700}
+        mt={50}
+        mb={40}
+        color={'white.1'}
+      >
+        Admin Dashboard
+      </Text>
       <Checkbox.Group
         value={projectStatus}
         label={'Status'}

@@ -1,14 +1,14 @@
 import { type Project } from '@prisma/client'
 import { Box, Text, Image, Group } from '@mantine/core'
 import { Tag } from '@/components/common/Tag'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 type Props = {
   project: Project
 }
 
 export const ProjectCard = ({ project }: Props) => {
-  const router = useRouter()
+  const link = project.status === 'Draft' ? `/project/edit/${project.id}` : `/project/${project.id}`
 
   return (
     <Box
@@ -21,25 +21,21 @@ export const ProjectCard = ({ project }: Props) => {
         position: 'relative',
       }}
     >
-      <Image
-        src={project.bannerImage}
-        width={'100%'}
-        fit={'cover'}
-        height={318}
-        alt={project.name}
-        radius={10}
-        mb={20}
-        sx={{
-          cursor: 'pointer',
-        }}
-        onClick={() => {
-          if (project.status === 'Draft') {
-            void router.push(`/project/edit/${project.id}`)
-          } else {
-            void router.push(`/project/${project.id}`)
-          }
-        }}
-      />
+      <Link href={link}>
+        <Image
+          src={project.bannerImage}
+          width={'100%'}
+          fit={'cover'}
+          height={318}
+          alt={project.name}
+          radius={10}
+          mb={20}
+          sx={{
+            cursor: 'pointer',
+          }}
+          withPlaceholder
+        />
+      </Link>
       <Group
         spacing={0}
         noWrap
@@ -50,6 +46,7 @@ export const ProjectCard = ({ project }: Props) => {
           height={40}
           alt={project.name}
           radius={14}
+          withPlaceholder
         />
         <Text
           fw={700}

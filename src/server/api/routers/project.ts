@@ -134,4 +134,35 @@ export const projectRouter = createTRPCRouter({
       message: 'Project Deleted',
     }
   }),
+  getProjectById: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { user } = ctx.session
+      const filter: Prisma.ProjectWhereUniqueInput = {
+        id: input.id,
+      }
+
+      if (user.role !== 'Admin') {
+        filter.userId = user.id
+      }
+
+      const project = await prisma.project.findUniqueOrThrow({
+        where: filter,
+        include: {
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      })
+
+      return {
+        project,
+      }
+    }),
 })
