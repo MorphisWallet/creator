@@ -162,53 +162,6 @@ export const ProjectForm = ({ project }: Props) => {
   }, [])
 
   const createOrUpdateProject = (status: ProjectStatus) => {
-    if (bannerImage === '') {
-      return notifications.show({
-        title: 'Error',
-        color: 'red',
-        message: 'Banner image is required',
-      })
-    }
-
-    if (logoUrl === '') {
-      return notifications.show({
-        title: 'Error',
-        color: 'red',
-        message: 'Logo is required',
-      })
-    }
-
-    if (categories.length === 0) {
-      return notifications.show({
-        title: 'Error',
-        color: 'red',
-        message: 'Category is required',
-      })
-    }
-
-    if (blockchains.length === 0) {
-      return notifications.show({
-        title: 'Error',
-        color: 'red',
-        message: 'Blockchain is required',
-      })
-    }
-
-    if (name === '') {
-      return notifications.show({
-        title: 'Error',
-        color: 'red',
-        message: 'Project name is required',
-      })
-    }
-    if (description === '') {
-      return notifications.show({
-        title: 'Error',
-        color: 'red',
-        message: 'Project description is required',
-      })
-    }
-
     const resultToParse: Partial<ProjectCreateOrUpdateSchemaType> = {
       projectStage,
       logoUrl,
@@ -228,7 +181,9 @@ export const ProjectForm = ({ project }: Props) => {
     if (project?.id) {
       resultToParse.id = project.id
     }
+
     const zodResult = projectCreateOrUpdateSchema.safeParse(resultToParse)
+
     if (!zodResult.success) {
       return notifications.show({
         title: 'Error',

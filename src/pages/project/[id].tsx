@@ -163,6 +163,7 @@ export default function ProjectDetailPage() {
               height={600}
               fit={'cover'}
               alt={project.name}
+              withPlaceholder
             />
           </Box>
           <Container size={'lg'}>
@@ -183,6 +184,7 @@ export default function ProjectDetailPage() {
                   position: 'relative',
                   top: -84,
                 }}
+                withPlaceholder
               />
             </Box>
 
