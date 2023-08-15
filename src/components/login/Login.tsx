@@ -97,17 +97,29 @@ const LoginOption = () => {
 
   return (
     <Box
-      mt={100}
+      mt={{
+        xs: 20,
+        md: 100,
+      }}
       sx={{
         borderRadius: '72px',
         border: '1px solid #E2E2EA',
         backgroundColor: '#E2E2EA',
-        width: 620,
+        maxWidth: 620,
       }}
       mx={'auto'}
-      px={94}
-      pt={58}
-      pb={100}
+      px={{
+        xs: 40,
+        md: 94,
+      }}
+      pt={{
+        xs: 40,
+        md: 58,
+      }}
+      pb={{
+        xs: 40,
+        md: 100,
+      }}
       mb={20}
     >
       <svg
@@ -217,7 +229,10 @@ const LoginOption = () => {
         mt={'md'}
         size={24}
         color={'#737375'}
-        mb={47}
+        mb={{
+          xs: 25,
+          md: 47,
+        }}
         fw={500}
       >
         Login to create a new project or manage your projects
@@ -239,7 +254,10 @@ const LoginOption = () => {
           height: '1px',
           background: '#1A1A1A',
         }}
-        my={28}
+        my={{
+          xs: 14,
+          md: 28,
+        }}
       ></Box>
       <LoginButton
         leftIcon={<TwitterIcon />}

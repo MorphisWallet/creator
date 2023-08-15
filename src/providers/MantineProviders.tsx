@@ -48,6 +48,13 @@ export const MantineProviders = ({ children }: Props) => {
             },
           },
         },
+        breakpoints: {
+          xs: '0em',
+          sm: '48em',
+          md: '64em',
+          lg: '74em',
+          xl: '90em',
+        },
       }}
     >
       <ModalsProvider>

@@ -31,7 +31,10 @@ export const Project = () => {
       <Text
         size={42}
         fw={700}
-        mt={50}
+        mt={{
+          xs: 25,
+          md: 50,
+        }}
         color={'white.1'}
       >
         My Projects
@@ -65,7 +68,11 @@ export const Project = () => {
         </Link>
         {projectData ? (
           <SimpleGrid
-            cols={3}
+            breakpoints={[
+              { minWidth: 'xs', cols: 1 },
+              { minWidth: 'sm', cols: 2 },
+              { minWidth: 'md', cols: 3 },
+            ]}
             mt={44}
             pb={40}
           >
