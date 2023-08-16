@@ -28,7 +28,10 @@ export default function Settings() {
       >
         Settings
       </Text>
-      <Box w={550}>
+      <Box
+        maw={550}
+        pb={20}
+      >
         <AccountConnect />
       </Box>
     </Layout>
