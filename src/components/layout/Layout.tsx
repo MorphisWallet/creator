@@ -4,6 +4,7 @@ import { UserProfile } from '@/components/layout/UserProfile'
 import Link from 'next/link'
 import { MantineProviders } from '@/providers/MantineProviders'
 import { ErrorBoundary, HighlightInit } from '@highlight-run/next/client'
+import { Footer } from '@/components/layout/Footer'
 
 type Props = {
   children: React.ReactNode
@@ -168,6 +169,7 @@ export const Layout = ({ children, fullWidth }: Props) => {
           >
             <Box>{children}</Box>
           </Container>
+          <Footer />
         </Box>
       </MantineProviders>
     </ErrorBoundary>

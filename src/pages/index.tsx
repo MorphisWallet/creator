@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 
 const Spinner = () => {
   return (
-    <Center mt={60}>
+    <Center my={60}>
       <Loader
         color={'red'}
         size={40}

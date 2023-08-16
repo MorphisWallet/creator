@@ -120,7 +120,10 @@ const LoginOption = () => {
         xs: 40,
         md: 100,
       }}
-      mb={20}
+      mb={{
+        xs: 20,
+        md: 100,
+      }}
     >
       <svg
         width="159"
