@@ -110,7 +110,6 @@ export const Footer = () => {
         borderTop: '1px solid #D9D9D9',
       }}
       py={30}
-      mt={20}
     >
       <Container
         size={'lg'}

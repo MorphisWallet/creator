@@ -121,7 +121,7 @@ export default function ProjectDetailPage() {
         <title>Kiosk Creator - Project</title>
       </Head>
       {error && (
-        <Center mt={'md'}>
+        <Center my={'md'}>
           <Alert
             icon={<IconAlertCircle size="1rem" />}
             title="Error!"
@@ -132,7 +132,7 @@ export default function ProjectDetailPage() {
         </Center>
       )}
       {isLoading && (
-        <Center mt={'md'}>
+        <Center my={'md'}>
           <Loader
             color={'red'}
             size={40}
@@ -152,9 +152,10 @@ export default function ProjectDetailPage() {
                 left: 30,
                 zIndex: 1,
               }}
+              size={'xl'}
             >
               <IconArrowLeft
-                size="1rem"
+                size="2rem"
                 color={'white'}
               />
             </ActionIcon>
@@ -198,10 +199,12 @@ export default function ProjectDetailPage() {
               position={'apart'}
               mt={45}
             >
-              <Group spacing={18}>
+              <Group
+                spacing={18}
+                noWrap
+              >
                 <Text
                   lineClamp={1}
-                  truncate
                   color={'white.1'}
                   size={34}
                   fw={800}

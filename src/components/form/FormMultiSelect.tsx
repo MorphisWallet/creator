@@ -15,6 +15,7 @@ export const FormMultiSelect = (props: React.ComponentProps<typeof MultiSelect>)
           paddingLeft: '16px',
           color: '#E6E6E6',
           fontSize: '16px',
+          paddingRight: '40px',
         },
         searchInput: {
           fontSize: '16px',

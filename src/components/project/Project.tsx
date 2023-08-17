@@ -27,7 +27,7 @@ export const Project = () => {
   }, [error])
 
   return (
-    <Box>
+    <Box mb={20}>
       <Text
         size={42}
         fw={700}

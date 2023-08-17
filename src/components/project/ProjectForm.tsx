@@ -9,7 +9,7 @@ import { ProjectGraphicsForm } from '@/components/project/ProjectGraphicsForm'
 import { useSession } from 'next-auth/react'
 import { api } from '@/utils/api'
 import { notifications } from '@mantine/notifications'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { projectCreateOrUpdateSchema, type ProjectCreateOrUpdateSchemaType } from '@/schemas'
 import { useProjectFormStore } from '@/store'
 import { modals } from '@mantine/modals'
@@ -212,21 +212,26 @@ export const ProjectForm = ({ project }: Props) => {
         createOrUpdateProject(ProjectStatus.Draft)
       },
     })
+  const largeScreen = useMediaQuery('(min-width: 64em)')
 
   return (
     <>
-      <Group
-        spacing={0}
-        align={'start'}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: largeScreen ? '300px 1fr' : '1fr',
+        }}
       >
         <Box
           sx={{
-            borderRight: '1px solid #2F2F2F',
+            borderRight: largeScreen ? '1px solid #2F2F2F' : 'none',
             alignSelf: 'stretch',
-            minHeight: 'calc(100vh - 94px)',
+            minHeight: largeScreen ? 'calc(100vh - 94px)' : 'auto',
           }}
-          w={300}
-          pr={16}
+          pr={{
+            xs: 0,
+            md: 16,
+          }}
         >
           <Group
             spacing={0}
@@ -281,7 +286,10 @@ export const ProjectForm = ({ project }: Props) => {
           />
         </Box>
         <Box
-          pt={40}
+          pt={{
+            xs: 20,
+            md: 40,
+          }}
           sx={{ flex: 1 }}
         >
           <Text
@@ -293,8 +301,14 @@ export const ProjectForm = ({ project }: Props) => {
             {getTitle()}
           </Text>
           <Box
-            ml={16}
-            mt={34}
+            ml={{
+              xs: 0,
+              md: 16,
+            }}
+            mt={{
+              xs: 17,
+              md: 34,
+            }}
           >
             {getForm()}
             <Group
@@ -320,7 +334,7 @@ export const ProjectForm = ({ project }: Props) => {
             </Group>
           </Box>
         </Box>
-      </Group>
+      </Box>
       <ProjectReviewAlert
         opened={isOpened}
         onClose={handler.close}

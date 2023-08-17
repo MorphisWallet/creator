@@ -12,7 +12,10 @@ export const FormLayout = ({ children }: FormLayoutProps) => {
         border: '1px solid #2F2F2F',
         borderRadius: 24,
       }}
-      p={48}
+      p={{
+        xs: 24,
+        md: 48,
+      }}
     >
       {children}
     </Box>

@@ -1,5 +1,6 @@
 import { Modal, Text, Image, Group, Center, Button } from '@mantine/core'
 import { useRouter } from 'next/router'
+import { useMediaQuery } from '@mantine/hooks'
 
 type ProjectReviewAlertProps = {
   opened: boolean
@@ -94,6 +95,7 @@ export const ProjectReviewAlert = ({ opened, onClose, logo, name, banner, id }: 
   const goToDetails = () => {
     void push(`/project/${id}`)
   }
+  const largeScreen = useMediaQuery('(min-width: 64em)')
 
   return (
     <Modal
@@ -164,7 +166,7 @@ export const ProjectReviewAlert = ({ opened, onClose, logo, name, banner, id }: 
       </Center>
       <Center mt={20}>
         <Text
-          size={36}
+          size={largeScreen ? 36 : 20}
           fw={500}
           color={'dark.8'}
           align={'center'}
@@ -175,7 +177,7 @@ export const ProjectReviewAlert = ({ opened, onClose, logo, name, banner, id }: 
       <Center mt={16}>
         <Text
           color={'#737375'}
-          size={20}
+          size={largeScreen ? 20 : 14}
           fw={500}
         >
           Please wait while we review for project
