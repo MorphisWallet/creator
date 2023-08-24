@@ -30,6 +30,7 @@ export const env = createEnv({
     S3_UPLOAD_REGION: z.string().min(1),
     ETHERSCAN_API_KEY: z.string().min(1),
     POLYGONSCAN_API_KEY: z.string().min(1),
+    KIOSK_SLACK_WEBHOOK: z.string().url(),
   },
 
   /**
@@ -62,6 +63,7 @@ export const env = createEnv({
     S3_UPLOAD_REGION: process.env.S3_UPLOAD_REGION,
     ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY,
     POLYGONSCAN_API_KEY: process.env.POLYGONSCAN_API_KEY,
+    KIOSK_SLACK_WEBHOOK: process.env.KIOSK_SLACK_WEBHOOK,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

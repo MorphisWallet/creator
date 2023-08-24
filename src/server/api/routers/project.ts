@@ -4,6 +4,8 @@ import { prisma } from '@/server/db'
 import { projectCreateOrUpdateSchema } from '@/schemas/project'
 import { z } from 'zod'
 import { type Prisma, type Project } from '@prisma/client'
+import { sendInReviewAlertMessage } from '@/utils/slack'
+import { env } from '@/env.mjs'
 
 const MAX_PROJECTS_FOR_USER = 10
 
@@ -116,6 +118,15 @@ export const projectRouter = createTRPCRouter({
         userId: user.id,
       },
     })
+
+    if (createdProject.status === 'InReview' && env.NODE_ENV === 'production') {
+      void sendInReviewAlertMessage({
+        projectId: createdProject.id,
+        description: createdProject.description,
+        name: createdProject.name,
+        logoUrl: createdProject.logoUrl,
+      })
+    }
 
     return {
       project: createdProject,
