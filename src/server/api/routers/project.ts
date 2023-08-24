@@ -120,7 +120,7 @@ export const projectRouter = createTRPCRouter({
     })
 
     if (createdProject.status === 'InReview' && env.NODE_ENV === 'production') {
-      void sendInReviewAlertMessage({
+      await sendInReviewAlertMessage({
         projectId: createdProject.id,
         description: createdProject.description,
         name: createdProject.name,
