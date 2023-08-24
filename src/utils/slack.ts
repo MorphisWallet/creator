@@ -9,8 +9,7 @@ type SendInReviewAlertMessageInput = {
 
 export const sendInReviewAlertMessage = async (input: SendInReviewAlertMessageInput) => {
   const { name, projectId, logoUrl, description } = input
-  console.log(logoUrl)
-  const projectUrl = `${env.NEXTAUTH_URL}/project/${projectId}`
+  const projectUrl = `${env.SIWE_URL}/project/${projectId}`
   const slackMessage = {
     text: 'A new project has been submitted for review',
     blocks: [
