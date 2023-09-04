@@ -148,6 +148,8 @@ enum Category {
   Infrastructure
   Social
   Others
+  SmartNFT
+  Bot
 }
 
 enum ProjectBlockchain {

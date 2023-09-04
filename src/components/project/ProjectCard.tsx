@@ -2,6 +2,7 @@ import { type Project } from '@prisma/client'
 import { Box, Text, Image, Group } from '@mantine/core'
 import { Tag } from '@/components/common/Tag'
 import Link from 'next/link'
+import { categoryLabelMapping } from '@/schemas'
 
 type Props = {
   project: Project
@@ -70,7 +71,7 @@ export const ProjectCard = ({ project }: Props) => {
         {project.categories.map(category => (
           <Tag
             key={category}
-            label={category}
+            label={categoryLabelMapping[category]}
           />
         ))}
       </Group>

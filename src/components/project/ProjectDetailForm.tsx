@@ -8,6 +8,7 @@ import { FormTextArea } from '@/components/form/FormTextArea'
 import { FormTag } from '@/components/form/FormTag'
 import { pascalToNormal } from '@/utils/string'
 import { useProjectFormStore } from '@/store'
+import { categoryLabelMapping } from '@/schemas'
 
 type Props = {
   isDisabled: boolean
@@ -20,7 +21,7 @@ export const ProjectDetailForm = ({ isDisabled }: Props) => {
   }))
   const categoriesSelectData = Object.values(Category).map(category => ({
     value: category,
-    label: category,
+    label: categoryLabelMapping[category],
   }))
 
   const stageData = Object.values(ProjectStage).map(stage => ({

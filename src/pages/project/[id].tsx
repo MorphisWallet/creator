@@ -12,6 +12,7 @@ import { Tag } from '@/components/common/Tag'
 import dayjs from 'dayjs'
 import { pascalToNormal } from '@/utils/string'
 import { api } from '@/utils/api'
+import { categoryLabelMapping } from '@/schemas'
 
 const LabelText = ({ children }: { children: ReactNode }) => {
   return (
@@ -268,7 +269,7 @@ export default function ProjectDetailPage() {
                   {project.categories.map((category, index) => (
                     <Tag
                       key={index}
-                      label={category}
+                      label={categoryLabelMapping[category]}
                     />
                   ))}
                 </Group>

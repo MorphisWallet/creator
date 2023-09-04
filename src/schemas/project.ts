@@ -30,3 +30,16 @@ export const projectCreateOrUpdateSchema = z.object({
 })
 
 export type ProjectCreateOrUpdateSchemaType = z.infer<typeof projectCreateOrUpdateSchema>
+
+export const categoryLabelMapping: Record<Category, string> = {
+  [Category.DeFi]: 'DeFi',
+  [Category.NFT]: 'NFT',
+  [Category.Game]: 'Game',
+  [Category.Infrastructure]: 'Infrastructure',
+  [Category.Social]: 'Social',
+  [Category.SmartNFT]: 'Smart NFT',
+  [Category.Others]: 'Other',
+  [Category.Bot]: 'Bot',
+  [Category.Tooling]: 'Tooling',
+  [Category.Dao]: 'Dao',
+}
